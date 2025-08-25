@@ -3,3 +3,4 @@ raw_data/
 *.jpg
 *.txt
 *.json
+.python-version
