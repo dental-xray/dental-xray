@@ -1,6 +1,5 @@
 raw_data/
 *.jpeg
 *.jpg
-*.txt
 *.json
 .python-version
