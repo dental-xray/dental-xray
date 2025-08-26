@@ -52,14 +52,3 @@ print(f"Results saved in: {save_dir}")
 best_model = results.save_dir / 'weights' / 'best.pt'
 model.save('trained_model.pt')
 
-#===== Loading a model =====
-#loaded_model = YOLO('my_trained_model.pt')
-#best_model = YOLO('runs/segment/train/weights/best.pt')
-#results = loaded_model('test_image.jpg')
-
-#===== Prediction =====
-test_image = path + "/YOLO/YOLO/test/images/000dc27f-NAJIB_MARDANLOO_MASUME_2020-07-12185357_jpg.rf.adab6a526a5ec0225d2ce97c33095e8c.jpg"
-test_results = model(test_image)
-test_results.show()
-#test_results.save('output/') 
-
