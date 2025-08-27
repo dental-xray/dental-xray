@@ -6,7 +6,7 @@ IMGSZ=420
 
 MODEL="best.pt"
 echo "evaluate $MODEL"
-python val.py --weights ../models/${MODEL} --device ${DEVICE} --batch $BATCH --imgsz $IMGSZ> ${MODEL}.val
+python val.py --weights ~/.cache/kagglehub/datasets/lokisilvres/dental-disease-panoramic-detection-dataset/versions/6/${MODEL} --device ${DEVICE} --batch $BATCH --imgsz $IMGSZ> ${MODEL}.val
 
 MODEL="trained_model.pt"
 echo "evaluate $MODEL"

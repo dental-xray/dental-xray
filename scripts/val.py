@@ -46,8 +46,9 @@ def main():
             imgsz=args.imgsz,
             plots=True
             )
-    print(results.confusion_matrix.summary())
-    print(results.confusion_matrix.to_df())
+    #print(results.confusion_matrix.summary())
+    #print(results.confusion_matrix.to_df())
+    print(results.confusion_matrix.to_csv())
 
 
 if __name__ == '__main__':
