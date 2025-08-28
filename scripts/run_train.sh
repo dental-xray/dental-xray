@@ -28,7 +28,7 @@ fi
 if [ "$3" != "" ]; then
     EPOCH=$3
 else
-    EPOCH=1
+    EPOCH=100
 fi
 
 if [ "$4" != "" ]; then
