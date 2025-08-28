@@ -66,8 +66,7 @@ def main():
     print(f"Results saved in: {save_dir}")
 
     # best_model = results.save_dir / 'weights' / 'best.pt'
-    model.save('trained_model.pt')
+    model.save(f'trained_model_{args.epochs}epochs.pt')
 
 if __name__ == '__main__':
     main()
-

@@ -1,0 +1,10 @@
+=== YOLO Validation Script ===
+Model: /Users/syatsuzuka/.cache/kagglehub/datasets/lokisilvres/dental-disease-panoramic-detection-dataset/versions/6/best.pt
+Batch size: 12
+Image size: 420
+Device: cpu
+Path to dataset files: /Users/syatsuzuka/.cache/kagglehub/datasets/lokisilvres/dental-disease-panoramic-detection-dataset/versions/6
+mAP@0.5: 0.272862325490665
+mAP@0.5:0.95: 0.14136782363139025
+Precision: 0.4744410455418726
+Recall: 0.3826873080310706
