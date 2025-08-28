@@ -31,13 +31,22 @@ fi
 
 
 MODEL="best.pt"
-echo "evaluate $MODEL"
-python val.py --weights ~/.cache/kagglehub/datasets/lokisilvres/dental-disease-panoramic-detection-dataset/versions/6/${MODEL} --device ${DEVICE} --batch ${BATCH} --imgsz $IMGSZ 1> ../models/${MODEL}.val.csv 2> ../models/${MODEL}.val.log
+echo "evaluate $MODEL..."
+WEIGHTS="~/.cache/kagglehub/datasets/lokisilvres/dental-disease-panoramic-detection-dataset/versions/6/${MODEL}"
+CSV_FILE="../models/${MODEL}.val.csv"
+LOG_FILE="../models/${MODEL}.val.log"
+python val.py --weights ${WEIGHTS} --device ${DEVICE} --batch ${BATCH} --imgsz $IMGSZ 1> ${CSV_FILE} 2> ${LOG_FILE}
 
 MODEL="trained_model.pt"
-echo "evaluate $MODEL"
-python val.py --weights ../models/${MODEL} --device ${DEVICE} --batch ${BATCH} --imgsz ${IMGSZ} 1> ../models/${MODEL}.val.csv 2> ../models/${MODEL}.val.log
+echo "evaluate $MODEL..."
+WEIGHTS="../models/${MODEL}"
+CSV_FILE="../models/${MODEL}.val.csv"
+LOG_FILE="../models/${MODEL}.val.log"
+python val.py --weights ${WEIGHTS} --device ${DEVICE} --batch ${BATCH} --imgsz ${IMGSZ} 1> ${CSV_FILE} 2> ${LOG_FILE}
 
 MODEL="trained_model_100epoch.pt"
-echo "evaluate $MODEL"
-python val.py --weights ../models/${MODEL} --device ${DEVICE} --batch ${BATCH} --imgsz ${IMGSZ} 1> ../models/${MODEL}.val.csv 2> ../models/${MODEL}.val.log
+echo "evaluate $MODEL..."
+WEIGHTS="../models/${MODEL}"
+CSV_FILE="../models/${MODEL}.val.csv"
+LOG_FILE="../models/${MODEL}.val.log"
+python val.py --weights ${WEIGHTS} --device ${DEVICE} --batch ${BATCH} --imgsz ${IMGSZ} 1> ${CSV_FILE} 2> ${LOG_FILE}
