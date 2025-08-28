@@ -44,16 +44,15 @@ else
 fi
 
 OUTPUT_FILE="trained_model_${EPOCH}epoch.pt"
-LOG_FILE="${OUTPUT_FILE}.train.log"
+TRAIN_LOG_FILE="${OUTPUT_FILE}.train.log"
 VAL_LOG_FILE="${OUTPUT_FILE}.val.log"
+VAL_CSV_FILE="${OUTPUT_FILE}.val.csv"
 
 echo "Training model..."
-python train.py --weights ${WEIGHTS} --device ${DEVICE} --epochs ${EPOCH} --batch-size ${BATCH} --imgsz ${IMGSZ} > ${LOG_FILE} 2>&1
+python train.py --weights ${WEIGHTS} --device ${DEVICE} --epochs ${EPOCH} --batch-size ${BATCH} --imgsz ${IMGSZ} 1> ${TRAIN_LOG_FILE}
 
 echo "Evaluating model..."
-python val.py --weights ${OUTPUT_FILE} --device ${DEVICE} --batch ${BATCH} --imgsz ${IMGSZ} > ${VAL_LOG_FILE} 2>&1
+python val.py --weights ${OUTPUT_FILE} --device ${DEVICE} --batch ${BATCH} --imgsz ${IMGSZ} 1> ${VAL_CSV_FILE}  2> ${VAL_LOG_FILE}
 
 echo "Moving model to models directory..."
-mv ${OUTPUT_FILE} ../models/
-mv ${LOG_FILE} ../models/
-mv ${VAL_LOG_FILE} ../models/
+mv ${OUTPUT_FILE} ${LOG_FILE} ${VAL_LOG_FILE} ${VAL_CSV_FILE} ../models/

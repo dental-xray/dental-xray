@@ -32,7 +32,7 @@ fi
 
 MODEL="best.pt"
 echo "evaluate $MODEL..."
-WEIGHTS="~/.cache/kagglehub/datasets/lokisilvres/dental-disease-panoramic-detection-dataset/versions/6/${MODEL}"
+WEIGHTS="${HOME}/.cache/kagglehub/datasets/lokisilvres/dental-disease-panoramic-detection-dataset/versions/6/${MODEL}"
 CSV_FILE="../models/${MODEL}.val.csv"
 LOG_FILE="../models/${MODEL}.val.log"
 python val.py --weights ${WEIGHTS} --device ${DEVICE} --batch ${BATCH} --imgsz $IMGSZ 1> ${CSV_FILE} 2> ${LOG_FILE}
