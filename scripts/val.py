@@ -1,6 +1,7 @@
 import kagglehub
 from ultralytics import YOLO
 import argparse
+import sys
 
 def parse_args():
     parser = argparse.ArgumentParser(description='YOLO Validation Script')
@@ -26,31 +27,33 @@ def parse_args():
 def main():
     args = parse_args()
 
-    print("=== YOLO Validation Script ===")
-    print(f"Model: {args.weights}")
-    print(f"Batch size: {args.batch}")
-    print(f"Image size: {args.imgsz}")
-    print(f"Device: {args.device}")
+    print("=== YOLO Validation Script ===", file=sys.stderr)
+    print(f"Model: {args.weights}", file=sys.stderr)
+    print(f"Batch size: {args.batch}", file=sys.stderr)
+    print(f"Image size: {args.imgsz}", file=sys.stderr)
+    print(f"Device: {args.device}", file=sys.stderr)
 
     # Download latest version
     path = kagglehub.dataset_download("lokisilvres/dental-disease-panoramic-detection-dataset")
-    print("Path to dataset files:", path)
+    print("Path to dataset files:", path, file=sys.stderr)
 
     model = YOLO(args.weights)
 
     yaml_file = path + "/YOLO/YOLO/data.yaml"
     results = model.val(
-            data=yaml_file, 
+            data=yaml_file,
             device=args.device,
             batch=args.batch,
             imgsz=args.imgsz,
             plots=True
             )
-    #print(results.confusion_matrix.summary())
-    #print(results.confusion_matrix.to_df())
+
     print(results.confusion_matrix.to_csv())
+    print(f"mAP@0.5: {results.box.map50}", file=sys.stderr)
+    print(f"mAP@0.5:0.95: {results.box.map}", file=sys.stderr)
+    print(f"Precision: {results.box.mp}", file=sys.stderr)
+    print(f"Recall: {results.box.mr}", file=sys.stderr)
 
 
 if __name__ == '__main__':
     main()
-
