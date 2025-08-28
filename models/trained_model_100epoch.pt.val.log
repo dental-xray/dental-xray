@@ -2,9 +2,11 @@
 Model: ../models/trained_model_100epoch.pt
 Batch size: 12
 Image size: 420
-Device: cpu
-Path to dataset files: /Users/syatsuzuka/.cache/kagglehub/datasets/lokisilvres/dental-disease-panoramic-detection-dataset/versions/6
-mAP@0.5: 0.33464146684168017
-mAP@0.5:0.95: 0.16426859384899958
-Precision: 0.37172181111066066
-Recall: 0.42344592097455674
+Device: cuda
+Path to dataset files: /home/shunjiro/.cache/kagglehub/datasets/lokisilvres/dental-disease-panoramic-detection-dataset/versions/6
+/home/shunjiro/.pyenv/versions/test2-env/lib/python3.12/site-packages/torch/cuda/__init__.py:619: UserWarning: Can't initialize NVML
+  warnings.warn("Can't initialize NVML")
+mAP@0.5: 0.3348901451157193
+mAP@0.5:0.95: 0.1645031672445284
+Precision: 0.3713853984060011
+Recall: 0.42345422514284325
