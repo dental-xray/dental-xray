@@ -4,7 +4,7 @@ install:
 	@pip install -e .
 
 install-api:
-# 	@pip install -e .
+	@echo "do nothing for now"
 
 install-model:
 	@pip install -e .
@@ -12,7 +12,7 @@ install-model:
 	@pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
 
 reinstall:
-	@pip uninstall -y disease-recognition || :
+	@pip uninstall -y disease_recognition || :
 	@pip install -e .
 
 test:

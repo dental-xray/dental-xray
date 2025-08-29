@@ -1,7 +1,8 @@
-import kagglehub
 from ultralytics import YOLO
 import argparse
 import sys
+from disease_recognition.data import load_data
+
 
 def parse_args():
     parser = argparse.ArgumentParser(description='YOLO Validation Script')
@@ -34,14 +35,12 @@ def main():
     print(f"Device: {args.device}", file=sys.stderr)
 
     # Download latest version
-    path = kagglehub.dataset_download("lokisilvres/dental-disease-panoramic-detection-dataset")
-    print("Path to dataset files:", path, file=sys.stderr)
+    data = load_data()
 
     model = YOLO(args.weights)
 
-    yaml_file = path + "/YOLO/YOLO/data.yaml"
     results = model.val(
-            data=yaml_file,
+            data=data,
             device=args.device,
             batch=args.batch,
             imgsz=args.imgsz,
