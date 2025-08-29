@@ -26,6 +26,9 @@ def main():
 
     args = parse_args()
 
+    print(WEIGHTS_TRAIN)
+    print(DATASET)
+
     print("=== YOLO Training Script ===")
     print(f"Weights: {args.weights}")
     print(f"Epochs: {args.epochs}")
@@ -33,9 +36,6 @@ def main():
     print(f"Image size: {args.imgsz}")
     print(f"Device: {args.device}")
 
-
-    # Download latest version
-    # path = kagglehub.dataset_download("lokisilvres/dental-disease-panoramic-detection-dataset")
     path = load_data(DATASET)
 
     model = train_model(

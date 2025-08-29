@@ -2,10 +2,11 @@ import os
 import numpy as np
 from dotenv import load_dotenv
 
-load_dotenv()
+load_dotenv(override=True)
 
 
 #======= Variables for training =======#
+PROJECT_ROOT = os.environ.get("PROJECT_ROOT")
 DATASET = os.environ.get("DATASET")
 DATA_FILE = os.environ.get("DATA_FILE")
 WEIGHTS_TRAIN = os.environ.get("WEIGHTS_TRAIN")
