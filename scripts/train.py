@@ -1,16 +1,18 @@
 from ultralytics import YOLO
 import argparse
 from disease_recognition.params import *
-from disease_recognition.data import load_data
+from disease_recognition.data import *
+from disease_recognition.model import *
+
 
 def parse_args():
     parser = argparse.ArgumentParser(description='YOLO Training Script')
-    parser.add_argument('--weights', type=str, default='yolov8n.pt', help='initial weights path')
+    parser.add_argument('--weights', type=str, default=WEIGHTS_TRAIN, help='initial weights path')
     # parser.add_argument('--cfg', type=str, default='', help='model config file')
-    parser.add_argument('--epochs', type=int, default=100, help='number of epochs')
-    parser.add_argument('--batch-size', type=int, default=16, help='batch size')
-    parser.add_argument('--imgsz', type=int, default=640, help='image size')
-    parser.add_argument('--device', type=str, default='0', help='device (cpu or gpu id)')
+    parser.add_argument('--epochs', type=int, default=EPOCHS, help='number of epochs')
+    parser.add_argument('--batch-size', type=int, default=BATCH_SIZE, help='batch size')
+    parser.add_argument('--imgsz', type=int, default=IMG_SIZE, help='image size')
+    parser.add_argument('--device', type=str, default=DEVICE, help='device (cpu or gpu id)')
     # parser.add_argument('--workers', type=int, default=8, help='number of workers')
     # parser.add_argument('--project', type=str, default='runs/train', help='project name')
     # parser.add_argument('--name', type=str, default='exp', help='experiment name')
@@ -34,39 +36,18 @@ def main():
 
     # Download latest version
     # path = kagglehub.dataset_download("lokisilvres/dental-disease-panoramic-detection-dataset")
-    path = load_data()
+    path = load_data(DATASET)
 
-    # print("Path to dataset files:", path)
-
-    # Load a COCO-pretrained YOLOv8n model
-    model = YOLO(args.weights)
-
-    # Display model information (optional)
-    model.info()
-
-    # Train the model on the COCO8 example dataset for 100 epochs
-    # yaml_file = path + "/YOLO/YOLO/data.yaml"
-    results = model.train(
+    model = train_model(
+        weights=args.weights,
         data=DATA_FILE,
         device=args.device,
         epochs=args.epochs,
         imgsz=args.imgsz,
-        batch=args.batch_size,
-        #cache=True,                   # RAMキャッシュ
-        #patience=50,
-        #lr0=0.001,
-        #optimizer='AdamW',
-        #mosaic=0.5,
-        #mixup=0.0,
-        #degrees=5.0,
-        #translate=0.05
+        batch=args.batch_size
     )
 
-    save_dir = results.save_dir
-    print(f"Results saved in: {save_dir}")
-
-    # best_model = results.save_dir / 'weights' / 'best.pt'
-    model.save(f'trained_model_{args.epochs}epoch.pt')
+    save_model(model)
 
 if __name__ == '__main__':
     main()

@@ -3,6 +3,7 @@ import argparse
 import sys
 from disease_recognition.params import *
 from disease_recognition.data import load_data
+from disease_recognition.model import val_model
 
 
 def parse_args():
@@ -35,25 +36,15 @@ def main():
     print(f"Image size: {args.imgsz}", file=sys.stderr)
     print(f"Device: {args.device}", file=sys.stderr)
 
-    # Download latest version
-    path = load_data()
+    load_data(DATASET)
 
-    model = YOLO(args.weights)
-
-    results = model.val(
-            data=DATA_FILE,
-            device=args.device,
-            batch=args.batch,
-            imgsz=args.imgsz,
-            plots=True
-            )
-
-    print(results.confusion_matrix.to_csv())
-    print(f"mAP@0.5: {results.box.map50}", file=sys.stderr)
-    print(f"mAP@0.5:0.95: {results.box.map}", file=sys.stderr)
-    print(f"Precision: {results.box.mp}", file=sys.stderr)
-    print(f"Recall: {results.box.mr}", file=sys.stderr)
-
+    val_model(
+        weights=args.weights,
+        data=DATA_FILE,
+        device=args.device,
+        batch=args.batch,
+        imgsz=args.imgsz
+    )
 
 if __name__ == '__main__':
     main()
