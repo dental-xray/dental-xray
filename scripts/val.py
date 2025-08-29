@@ -1,6 +1,7 @@
 from ultralytics import YOLO
 import argparse
 import sys
+from disease_recognition.params import *
 from disease_recognition.data import load_data
 
 
@@ -29,18 +30,18 @@ def main():
     args = parse_args()
 
     print("=== YOLO Validation Script ===", file=sys.stderr)
-    print(f"Model: {args.weights}", file=sys.stderr)
+    print(f"Weights: {args.weights}", file=sys.stderr)
     print(f"Batch size: {args.batch}", file=sys.stderr)
     print(f"Image size: {args.imgsz}", file=sys.stderr)
     print(f"Device: {args.device}", file=sys.stderr)
 
     # Download latest version
-    data = load_data()
+    path = load_data()
 
     model = YOLO(args.weights)
 
     results = model.val(
-            data=data,
+            data=DATA_FILE,
             device=args.device,
             batch=args.batch,
             imgsz=args.imgsz,

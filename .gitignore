@@ -2,7 +2,6 @@ raw_data/
 .env
 *.jpeg
 *.jpg
-*.txt
 *.json
 
 .DS_Store
