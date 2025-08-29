@@ -1,10 +1,8 @@
-import pandas as pd
 import kagglehub
-from ultralytics import YOLO
 from disease_recognition.params import *
 
-def load_data(dataset: str="lokisilvres/dental-disease-panoramic-detection-dataset") -> str:
+def load_data(dataset) -> str:
 
-    path = kagglehub.dataset_download("lokisilvres/dental-disease-panoramic-detection-dataset")
+    path = kagglehub.dataset_download(dataset)
 
     return path

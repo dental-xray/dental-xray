@@ -6,6 +6,7 @@ load_dotenv()
 
 
 #======= Variables for training =======#
+DATASET = os.environ.get("DATASET")
 DATA_FILE = os.environ.get("DATA_FILE")
 WEIGHTS_TRAIN = os.environ.get("WEIGHTS_TRAIN")
 WEIGHTS_PREDICT = os.environ.get("WEIGHTS_PREDICT")

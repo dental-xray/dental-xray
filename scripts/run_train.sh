@@ -22,7 +22,7 @@ DEVICE=$1
 if [ "$2" != "" ]; then
     WEIGHTS_TRAIN=$2
 else
-    WEIGHTS_TRAIN="yolo11n-seg.pt"
+    WEIGHTS_TRAIN="yolo8n.pt"
 fi
 
 if [ "$3" != "" ]; then
