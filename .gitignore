@@ -5,10 +5,9 @@ raw_data/
 *.txt
 *.json
 
-# OS generated files #
 .DS_Store
 __MACOSX
 
-# Jupiter Notebook #
 .pytest_cache
 __pycache__
+.python-version
