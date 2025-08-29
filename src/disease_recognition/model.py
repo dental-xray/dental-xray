@@ -1,12 +1,13 @@
 import pandas as pd
 from ultralytics import YOLO
 from disease_recognition.params import *
+from datetime import datetime
 
 
 def init_model (input_shape: tuple):
     pass
 
-def train_model (data: str, weights="yolo8n.pt", device="cpu", epochs=100, batch=2, imgsz=420, patience=50):
+def train_model (data: str, weights="yolov8n.pt", device="cpu", epochs=100, batch=2, imgsz=420, patience=50):
 
     model = YOLO(weights)
     model.info()
@@ -33,9 +34,11 @@ def train_model (data: str, weights="yolo8n.pt", device="cpu", epochs=100, batch
     return model, results
 
 
-def save_model (model: YOLO):
+def save_model (model):
 
-    output_path = f'trained_model_{args.epochs}epoch.pt'
+    current_time = datetime.now().strftime("%Y%m%d%H%M%S")
+    output_path = f'trained_model_{current_time}.pt'
+
     model.save(output_path)
 
     print(f"Trained model saved to: {output_path}")
