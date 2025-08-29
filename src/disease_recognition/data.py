@@ -7,4 +7,4 @@ def load_data(dataset: str="lokisilvres/dental-disease-panoramic-detection-datas
 
     path = kagglehub.dataset_download("lokisilvres/dental-disease-panoramic-detection-dataset")
 
-    return path+"/YOLO/YOLO/data.yaml"
+    return path

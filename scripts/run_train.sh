@@ -6,10 +6,10 @@
 ################################################################################
 
 if [ "$#" -lt 1 ]; then
-  echo "Usage: $0 <DEVICE> [WEIGHTS] [EPOCH] [DEVICE] [BATCH_SIZE] [IMAGE_SIZE]"
+  echo "Usage: $0 <DEVICE> [WEIGHTS_TRAIN] [EPOCH] [DEVICE] [BATCH_SIZE] [IMAGE_SIZE]"
   echo
   echo "  DEVICE: 'cpu' or 'cuda'"
-  echo "  WEIGHTS: Model file to use for training (default: yolo11n-seg.pt)"
+  echo "  WEIGHTS_TRAIN: Model file to use for training (default: yolo11n-seg.pt)"
   echo "  EPOCH: Number of epochs to train (default: 100)"
   echo "  BATCH_SIZE: Batch size for validation (default: 2)"
   echo "  IMAGE_SIZE: Image size for validation (default: 420)"
@@ -20,9 +20,9 @@ fi
 DEVICE=$1
 
 if [ "$2" != "" ]; then
-    WEIGHTS=$2
+    WEIGHTS_TRAIN=$2
 else
-    WEIGHTS="yolo11n-seg.pt"
+    WEIGHTS_TRAIN="yolo11n-seg.pt"
 fi
 
 if [ "$3" != "" ]; then
@@ -49,7 +49,7 @@ VAL_LOG_FILE="${OUTPUT_FILE}.val.log"
 VAL_CSV_FILE="${OUTPUT_FILE}.val.csv"
 
 echo "Training model..."
-python train.py --weights ${WEIGHTS} --device ${DEVICE} --epochs ${EPOCH} --batch-size ${BATCH} --imgsz ${IMGSZ} 1> ${TRAIN_LOG_FILE}
+python train.py --weights ${WEIGHTS_TRAIN} --device ${DEVICE} --epochs ${EPOCH} --batch-size ${BATCH} --imgsz ${IMGSZ} 1> ${TRAIN_LOG_FILE}
 
 echo "Evaluating model..."
 python val.py --weights ${OUTPUT_FILE} --device ${DEVICE} --batch ${BATCH} --imgsz ${IMGSZ} 1> ${VAL_CSV_FILE}  2> ${VAL_LOG_FILE}
