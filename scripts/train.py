@@ -1,7 +1,6 @@
-import kagglehub
 from ultralytics import YOLO
 import argparse
-
+from disease_recognition.data import load_data
 
 def parse_args():
     parser = argparse.ArgumentParser(description='YOLO Training Script')
@@ -33,10 +32,10 @@ def main():
 
 
     # Download latest version
-    path = kagglehub.dataset_download("lokisilvres/dental-disease-panoramic-detection-dataset")
+    # path = kagglehub.dataset_download("lokisilvres/dental-disease-panoramic-detection-dataset")
+    data = load_data()
 
-    print("Path to dataset files:", path)
-
+    # print("Path to dataset files:", path)
 
     # Load a COCO-pretrained YOLOv8n model
     model = YOLO(args.weights)
@@ -45,9 +44,9 @@ def main():
     model.info()
 
     # Train the model on the COCO8 example dataset for 100 epochs
-    yaml_file = path + "/YOLO/YOLO/data.yaml"
+    # yaml_file = path + "/YOLO/YOLO/data.yaml"
     results = model.train(
-        data=yaml_file,
+        data=data,
         device=args.device,
         epochs=args.epochs,
         imgsz=args.imgsz,
