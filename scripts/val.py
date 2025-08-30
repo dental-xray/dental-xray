@@ -4,26 +4,16 @@ import sys
 from disease_recognition.params import *
 from disease_recognition.data import load_data
 from disease_recognition.model import val_model
-
+import os
 
 def parse_args():
     parser = argparse.ArgumentParser(description='YOLO Validation Script')
+    parser.add_argument('--output', type=str, default="trained_model.pt.val.csv", help='file to save confusion matrix')
     parser.add_argument('--weights', type=str, required=True, help='model weights path')
     parser.add_argument('--batch', type=int, default=16, help='batch size')
     parser.add_argument('--imgsz', type=int, default=640, help='image size')
     parser.add_argument('--device', type=str, default='0', help='device (cpu or gpu id)')
     parser.add_argument('--workers', type=int, default=8, help='number of workers')
-    # parser.add_argument('--conf-thres', type=float, default=0.001, help='confidence threshold')
-    # parser.add_argument('--iou-thres', type=float, default=0.6, help='NMS IoU threshold')
-    # parser.add_argument('--task', type=str, default='val', choices=['val', 'test'], help='validation or test')
-    # parser.add_argument('--split', type=str, help='dataset split (overrides task)')
-    # parser.add_argument('--save-txt', action='store_true', help='save results to txt files')
-    # parser.add_argument('--save-json', action='store_true', help='save results to COCO JSON')
-    # parser.add_argument('--save-hybrid', action='store_true', help='save hybrid results')
-    # parser.add_argument('--project', type=str, default='runs/val', help='project name')
-    # parser.add_argument('--name', type=str, default='exp', help='experiment name')
-    # parser.add_argument('--verbose', action='store_true', help='verbose output')
-    # parser.add_argument('--plots', action='store_true', help='save validation plots')
 
     return parser.parse_args()
 
@@ -33,22 +23,27 @@ def main():
 
     args = parse_args()
 
-    print("=== YOLO Validation Script ===", file=sys.stderr)
-    print(f"Weights: {args.weights}", file=sys.stderr)
-    print(f"Batch size: {args.batch}", file=sys.stderr)
-    print(f"Image size: {args.imgsz}", file=sys.stderr)
-    print(f"Device: {args.device}", file=sys.stderr)
+    print("=== YOLO Validation Script ===")
+    print(f"Output: {args.output}")
+    print(f"Weights: {args.weights}")
+    print(f"Batch size: {args.batch}")
+    print(f"Image size: {args.imgsz}")
+    print(f"Device: {args.device}")
     print()
 
     load_data(DATASET)
 
-    val_model(
-        weights=args.weights,
+    weights = os.path.join(LOCAL_REGISTRY_PATH, args.weights)
+
+    results = val_model(
         data=DATA_FILE,
+        weights=weights,
         device=args.device,
         batch=args.batch,
         imgsz=args.imgsz
     )
+
+    results.confusion_matrix.to_csv(args.output)
 
 if __name__ == '__main__':
     main()

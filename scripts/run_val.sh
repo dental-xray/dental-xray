@@ -40,17 +40,14 @@ echo "Image size: ${IMG_SIZE}"
 echo
 
 
-rm -rf ${WORK_DIR}
-cd ${WORK_DIR}
-
 if [ "${TARGET_MODEL}" = "all" ]; then
 
   MODEL="best.pt"
   echo "evaluate $MODEL..."
   WEIGHTS="${HOME}/.cache/kagglehub/datasets/lokisilvres/dental-disease-panoramic-detection-dataset/versions/6/${MODEL}"
-  CSV_FILE="${LOCAL_REGISTRY_PATH}/${MODEL}.val.csv"
-  LOG_FILE="${LOCAL_REGISTRY_PATH}/${MODEL}.val.log"
-  COMMAND="python ${SCRIPT_DIR}/val.py --weights ${WEIGHTS} --device ${DEVICE} --batch ${BATCH_SIZE} --imgsz ${IMG_SIZE} 1> ${CSV_FILE} 2> ${LOG_FILE}"
+  VAL_CSV_FILE="${LOCAL_REGISTRY_PATH}/${MODEL}.val.csv"
+  VAL_LOG_FILE="${LOCAL_REGISTRY_PATH}/${MODEL}.val.log"
+  COMMAND="python ${SCRIPT_DIR}/val.py --output ${VAL_CSV_FILE} --weights ${WEIGHTS} --device ${DEVICE} --batch ${BATCH_SIZE} --imgsz ${IMG_SIZE} > ${VAL_LOG_FILE}"
   echo "COMMAND: $COMMAND"
   eval $COMMAND
 
@@ -58,9 +55,9 @@ if [ "${TARGET_MODEL}" = "all" ]; then
   MODEL="trained_model_5epoch.pt"
   echo "evaluate $MODEL..."
   WEIGHTS="${LOCAL_REGISTRY_PATH}/${MODEL}"
-  CSV_FILE="${LOCAL_REGISTRY_PATH}/${MODEL}.val.csv"
-  LOG_FILE="${LOCAL_REGISTRY_PATH}/${MODEL}.val.log"
-  COMMAND="python ${SCRIPT_DIR}/val.py --weights ${WEIGHTS} --device ${DEVICE} --batch ${BATCH_SIZE} --imgsz ${IMG_SIZE} 1> ${CSV_FILE} 2> ${LOG_FILE}"
+  VAL_CSV_FILE="${LOCAL_REGISTRY_PATH}/${MODEL}.val.csv"
+  VAL_LOG_FILE="${LOCAL_REGISTRY_PATH}/${MODEL}.val.log"
+  COMMAND="python ${SCRIPT_DIR}/val.py --output ${VAL_CSV_FILE} --weights ${WEIGHTS} --device ${DEVICE} --batch ${BATCH_SIZE} --imgsz ${IMG_SIZE} > ${VAL_LOG_FILE}"
   echo "COMMAND: $COMMAND"
   eval $COMMAND
 
@@ -68,22 +65,20 @@ if [ "${TARGET_MODEL}" = "all" ]; then
   MODEL="trained_model_100epoch.pt"
   echo "evaluate $MODEL..."
   WEIGHTS="${LOCAL_REGISTRY_PATH}/${MODEL}"
-  CSV_FILE="${LOCAL_REGISTRY_PATH}/${MODEL}.val.csv"
-  LOG_FILE="${LOCAL_REGISTRY_PATH}/${MODEL}.val.log"
-  COMMAND="python ${SCRIPT_DIR}/val.py --weights ${WEIGHTS} --device ${DEVICE} --batch ${BATCH_SIZE} --imgsz ${IMG_SIZE} 1> ${CSV_FILE} 2> ${LOG_FILE}"
+  VAL_CSV_FILE="${LOCAL_REGISTRY_PATH}/${MODEL}.val.csv"
+  VAL_LOG_FILE="${LOCAL_REGISTRY_PATH}/${MODEL}.val.log"
+  COMMAND="python ${SCRIPT_DIR}/val.py --output ${VAL_CSV_FILE} --weights ${WEIGHTS} --device ${DEVICE} --batch ${BATCH_SIZE} --imgsz ${IMG_SIZE} > ${VAL_LOG_FILE}"
   echo "COMMAND: $COMMAND"
   eval $COMMAND
 
 else
 
-  echo "Evaluate model: ${TARGET_MODEL}"
-
   MODEL=${TARGET_MODEL}
   echo "evaluate $MODEL..."
   WEIGHTS="${LOCAL_REGISTRY_PATH}/${MODEL}"
-  CSV_FILE="${LOCAL_REGISTRY_PATH}/${MODEL}.val.csv"
-  LOG_FILE="${LOCAL_REGISTRY_PATH}/${MODEL}.val.log"
-  COMMAND="python ${SCRIPT_DIR}/val.py --weights ${WEIGHTS} --device ${DEVICE} --batch ${BATCH_SIZE} --imgsz ${IMG_SIZE} 1> ${CSV_FILE} 2> ${LOG_FILE}"
+  VAL_CSV_FILE="${LOCAL_REGISTRY_PATH}/${MODEL}.val.csv"
+  VAL_LOG_FILE="${LOCAL_REGISTRY_PATH}/${MODEL}.val.log"
+  COMMAND="python ${SCRIPT_DIR}/val.py --output ${VAL_CSV_FILE} --weights ${WEIGHTS} --device ${DEVICE} --batch ${BATCH_SIZE} --imgsz ${IMG_SIZE} > ${VAL_LOG_FILE}"
   echo "COMMAND: $COMMAND"
   eval $COMMAND
 
