@@ -38,13 +38,6 @@ def train_model (data: str, weights="yolov8n.pt", device="cpu", epochs=100, batc
         imgsz=imgsz,
         batch=batch,
         patience=patience
-        #cache=True,
-        #lr0=0.001,
-        #optimizer='AdamW',
-        #mosaic=0.5,
-        #mixup=0.0,
-        #degrees=5.0,
-        #translate=0.05
     )
 
     save_dir = results.save_dir
@@ -73,11 +66,10 @@ def val_model (data: str, weights, device="cpu", batch=12, imgsz=420):
         plots=True
     )
 
-    print(results.confusion_matrix.to_csv())
-    print(f"mAP@0.5: {results.box.map50}", file=sys.stderr)
-    print(f"mAP@0.5:0.95: {results.box.map}", file=sys.stderr)
-    print(f"Precision: {results.box.mp}", file=sys.stderr)
-    print(f"Recall: {results.box.mr}", file=sys.stderr)
+    print(f"mAP@0.5: {results.box.map50}")
+    print(f"mAP@0.5:0.95: {results.box.map}")
+    print(f"Precision: {results.box.mp}")
+    print(f"Recall: {results.box.mr}")
 
     print("✅ Validation completed")
     print()
