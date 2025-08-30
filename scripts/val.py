@@ -44,6 +44,8 @@ def main():
     )
 
     results.confusion_matrix.to_csv(args.output)
+    with open(args.output, 'w', encoding='utf-8') as f:
+        f.write(results.confusion_matrix.to_csv())
 
 if __name__ == '__main__':
     main()

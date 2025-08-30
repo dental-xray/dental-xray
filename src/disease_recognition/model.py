@@ -43,7 +43,7 @@ def train_model (data: str, weights="yolov8n.pt", device="cpu", epochs=100, batc
     save_dir = results.save_dir
     print(f"✅ Results saved in: {save_dir}")
 
-    return model, results
+    return (model, results)
 
 
 def val_model (data: str, weights, device="cpu", batch=12, imgsz=420):

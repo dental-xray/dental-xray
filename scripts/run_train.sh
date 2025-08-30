@@ -75,6 +75,6 @@ eval $COMMAND
 
 echo
 echo "Moving model to models directory..."
-COMMAND="mv ${OUTPUT_FILE} ${TRAIN_LOG_FILE} ${VAL_LOG_FILE} ${VAL_CSV_FILE} ${LOCAL_REGISTRY_PATH}"
+COMMAND="mv ${TRAIN_LOG_FILE} ${VAL_LOG_FILE} ${VAL_CSV_FILE} ${LOCAL_REGISTRY_PATH}"
 echo "COMMAND: $COMMAND"
 eval $COMMAND
