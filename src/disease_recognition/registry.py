@@ -29,7 +29,10 @@ def save_model(model, storage, path, filename=None):
 
     print("✅ Model saved locally")
 
-    if storage == "gcs":
+    if storage == "local":
+        pass
+
+    elif storage == "gcs":
         # # 🎁 We give you this piece of code as a gift. Please read it carefully! Add a breakpoint if needed!
 
         # model_filename = model_path.split("/")[-1] # e.g. "20230208-161047.h5" for instance
@@ -40,8 +43,6 @@ def save_model(model, storage, path, filename=None):
 
         print("✅ Model saved to GCS")
 
-        return None
-
     elif storage == "mlflow":
         # mlflow.tensorflow.log_model(
         #     model=model,
@@ -50,8 +51,6 @@ def save_model(model, storage, path, filename=None):
         # )
 
         print("✅ Model saved to MLflow")
-
-        return None
 
     else:
         print("❌ Model target not recognized. Please choose either 'local', 'gcs' or 'mlflow'.\n")

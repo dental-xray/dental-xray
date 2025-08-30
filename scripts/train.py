@@ -38,16 +38,14 @@ def main():
 
     path = load_data(DATASET)
 
-    # model = train_model(
-    #     weights=args.weights,
-    #     data=DATA_FILE,
-    #     device=args.device,
-    #     epochs=args.epochs,
-    #     imgsz=args.imgsz,
-    #     batch=args.batch_size
-    # )
-
-    model = load_model(storage="local", path=LOCAL_REGISTRY_PATH, filename="trained_model.pt")
+    (model, _results) = train_model(
+        data=DATA_FILE,
+        weights=args.weights,
+        device=args.device,
+        epochs=args.epochs,
+        imgsz=args.imgsz,
+        batch=args.batch_size
+    )
 
     save_model(model, storage="local", path=LOCAL_REGISTRY_PATH, filename=args.output)
 
