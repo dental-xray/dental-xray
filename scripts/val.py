@@ -28,6 +28,9 @@ def parse_args():
     return parser.parse_args()
 
 def main():
+
+    """Main function to validate the YOLO model"""
+
     args = parse_args()
 
     print("=== YOLO Validation Script ===", file=sys.stderr)
@@ -35,6 +38,7 @@ def main():
     print(f"Batch size: {args.batch}", file=sys.stderr)
     print(f"Image size: {args.imgsz}", file=sys.stderr)
     print(f"Device: {args.device}", file=sys.stderr)
+    print()
 
     load_data(DATASET)
 
