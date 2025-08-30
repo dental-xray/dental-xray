@@ -5,10 +5,16 @@ from dotenv import load_dotenv
 load_dotenv(override=True)
 
 
+#======= General settings =======#
+PROJECT_ROOT=os.environ.get("PROJECT_ROOT")
+DATASET=os.environ.get("DATASET","lokisilvres/dental-disease-panoramic-detection-dataset")
+DATA_FILE=os.environ.get("DATA_FILE")
+MODEL_STORAGE=os.environ.get("MODEL_STORAGE","local")
+LOCAL_REGISTRY_PATH=os.environ.get("LOCAL_REGISTRY_PATH",os.path.join(PROJECT_ROOT,"models"))
+SCRIPT_DIR=os.environ.get("SCRIPT_DIR",os.path.join(PROJECT_ROOT,"scripts"))
+WORK_DIR=os.environ.get("WORK_DIR",os.path.join(PROJECT_ROOT,".tmp"))
+
 #======= Variables for training =======#
-PROJECT_ROOT = os.environ.get("PROJECT_ROOT")
-DATASET = os.environ.get("DATASET")
-DATA_FILE = os.environ.get("DATA_FILE")
 WEIGHTS_TRAIN = os.environ.get("WEIGHTS_TRAIN")
 WEIGHTS_PREDICT = os.environ.get("WEIGHTS_PREDICT")
 EPOCHS = int(os.environ.get("EPOCHS", 100))
