@@ -9,7 +9,7 @@ install-api:
 install-model:
 	@pip install -e .
 	@pip uninstall torch torchvision torchaudio
-	@pip install torch==2.7.1+cu118 torchvision==0.22.1+cu118 torchaudio2.7.1+cu118 --index-url https://download.pytorch.org/whl/cu118
+	@pip install torch==2.7.1+cu118 torchvision==0.22.1+cu118 torchaudio==2.7.1+cu118 --index-url https://download.pytorch.org/whl/cu118
 
 reinstall:
 	@pip uninstall -y disease_recognition || :
