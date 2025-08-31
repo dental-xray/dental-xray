@@ -1,22 +1,24 @@
+import numpy as np
 import pandas as pd
 from ultralytics import YOLO
 from disease_recognition.params import *
 from datetime import datetime
 from PIL import Image
 import os
+from colorama import Fore, Style
 from google.cloud import storage
-# from tensorflow import keras
 import mlflow
 from mlflow.tracking import MlflowClient
 
-def save_results(params: dict, metrics: dict):
+
+def save_results(model_storage, params: dict, metrics: dict):
 
     """Save training/validation results to a CSV file"""
     print("=== Saving results ===")
     print(f"params: {params}")
     print(f"metrics: {metrics}")
 
-    if MODEL_TARGET == "mlflow":
+    if model_storage == "mlflow":
         if params is not None:
             mlflow.log_params(params)
         if metrics is not None:
@@ -24,7 +26,7 @@ def save_results(params: dict, metrics: dict):
         print("✅ Results saved on mlflow")
 
 
-def save_model(model, model_storage, path, filename=None):
+def save_model(model, model_storage, path, filename=None, bucket_name=None, mlflow_model_name=None):
 
     """Save the trained model to the specified model_storage"""
 
@@ -38,9 +40,14 @@ def save_model(model, model_storage, path, filename=None):
         filename = f'trained_model_{current_time}.pt'
 
     model_path = os.path.join(path, filename)
-    model.save(model_path)
 
-    print("✅ Model saved locally")
+    try:
+        model.save(model_path)
+        print("✅ Model saved locally (PyTorch format)")
+
+    except Exception as e:
+        print(f"Model save failed: {e}")
+        return None
 
     if model_storage == "local":
         pass
@@ -48,7 +55,7 @@ def save_model(model, model_storage, path, filename=None):
     elif model_storage == "gcs":
 
         client = storage.Client()
-        bucket = client.bucket(BUCKET_NAME)
+        bucket = client.bucket(bucket_name)
         blob = bucket.blob(f"models/{filename}")
         blob.upload_from_filename(model_path)
 
@@ -58,13 +65,19 @@ def save_model(model, model_storage, path, filename=None):
 
     elif model_storage == "mlflow":
 
-        mlflow.tensorflow.log_model(
-            model=model,
-            artifact_path="model",
-            registered_model_name=MLFLOW_MODEL_NAME
-        )
+        try:
+            print("🚀 Starting MLflow upload...")
 
-        print("✅ Model saved to MLflow")
+            mlflow.pytorch.log_model(
+                pytorch_model=model,
+                name="model",
+                registered_model_name=mlflow_model_name
+            )
+            print("✅ Model saved to MLflow")
+
+        except Exception as e:
+            print(f"MLflow save failed: {e}")
+            return None
 
     else:
         print("❌ Model target not recognized. Please choose either 'local', 'gcs' or 'mlflow'.\n")
@@ -73,8 +86,7 @@ def save_model(model, model_storage, path, filename=None):
 
     return None
 
-
-def load_model(model_storage, stage="Production",bucket_name=None, filename=None, path=None):
+def load_model(model_storage, stage="Production",bucket_name=None, filename=None, path=None, mlflow_tracking_uri=None, mlflow_model_name=None):
 
     """Load a model from the specified model_storage"""
 
@@ -85,11 +97,14 @@ def load_model(model_storage, stage="Production",bucket_name=None, filename=None
     print(f"path: {path}")
 
     if model_storage == "local":
+        print(Fore.BLUE + f"\nLoad latest model from local registry..." + Style.RESET_ALL)
+
         model = YOLO(os.path.join(path, filename))
 
         print("✅ Model loaded from local file")
 
     elif model_storage == "gcs":
+        print(Fore.BLUE + f"\nLoad latest model from GCS..." + Style.RESET_ALL)
 
         client = storage.Client()
         bucket = client.get_bucket(bucket_name)
@@ -113,22 +128,28 @@ def load_model(model_storage, stage="Production",bucket_name=None, filename=None
         print("✅ Model loaded from GCS")
 
     elif model_storage == "mlflow":
-        # # 🎁 We give you this piece of code as a gift. Please read it carefully! Add a breakpoint if needed!
+        print(Fore.BLUE + f"\nLoad [{stage}] model from MLflow..." + Style.RESET_ALL)
 
-        # import mlflow
-        # from mlflow.tracking import MlflowClient
+        mlflow.set_tracking_uri(mlflow_tracking_uri)
+        client = MlflowClient()
 
-        # client = MlflowClient()
-        # latest_model_version = client.get_latest_versions(MLFLOW_MODEL_NAME, stages=[stage])[0]
-        # model_uri = f"models:/{MLFLOW_MODEL_NAME}/{latest_model_version.version}"
-        # model = mlflow.pyfunc.load_model(model_uri)
+        try:
+            model_versions = client.get_latest_versions(name=mlflow_model_name, stages=[stage])
+            model_uri = model_versions[0].source
 
-        print("✅ Model loaded from MLflow")
+        except:
+            print(f"\n❌ No model found with name {mlflow_model_name} in stage {stage}")
+            return None
 
-    else:
-        print("❌ Model target not recognized. Please choose either 'local', 'gcs' or 'mlflow'.")
+        print(f"Model URI: {model_uri}")
 
-    print()
+        try:
+            model = mlflow.pyfunc.load_model(model_uri)
+            print("✅ Model loaded from MLflow")
+
+        except Exception as e:
+            print(f"❌ Model load failed: {e}")
+
     return model
 
 

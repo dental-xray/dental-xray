@@ -1,4 +1,3 @@
-from ultralytics import YOLO
 import argparse
 from disease_recognition.params import *
 from disease_recognition.data import *
@@ -46,9 +45,9 @@ def main():
         batch=args.batch_size
     )
 
-    # model = load_model(model_storage="gcs", bucket_name=BUCKET_NAME, path=LOCAL_REGISTRY_PATH, filename="test.pt")
+    # model = load_model(model_storage="local", stage="None", bucket_name=BUCKET_NAME, path=LOCAL_REGISTRY_PATH, filename="trained_model_5epoch.pt", mlflow_model_name=MLFLOW_MODEL_NAME)
+    save_model(model, model_storage=MODEL_STORAGE, path=LOCAL_REGISTRY_PATH, filename=args.output, mlflow_model_name=MLFLOW_MODEL_NAME)
 
-    save_model(model, model_storage=MODEL_STORAGE, path=LOCAL_REGISTRY_PATH, filename=args.output)
 
 if __name__ == '__main__':
     main()
