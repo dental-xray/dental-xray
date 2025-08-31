@@ -1,9 +1,6 @@
 raw_data/
 .env
 .tmp
-*.jpeg
-*.jpg
-*.json
 
 .DS_Store
 __MACOSX
