@@ -77,15 +77,15 @@ def val_model (data: str, weights, device="cpu", batch=12, imgsz=420):
     return results
 
 
-def pred_model (model: YOLO, image_file: str):
-    """Predict using the YOLO model on a given image file"""
+# def pred_model (model: YOLO, image_file: str):
+#     """Predict using the YOLO model on a given image file"""
 
-    print("=== Predicting ===")
-    print(f"image_file: {image_file}")
+#     print("=== Predicting ===")
+#     print(f"image_file: {image_file}")
 
-    pass
+#     results = model.predict(image_file)
 
-    print("✅ Prediction completed")
-    print()
+#     print("✅ Prediction completed")
+#     print()
 
-    return None
+#     return results
