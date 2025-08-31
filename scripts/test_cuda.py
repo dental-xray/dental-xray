@@ -8,19 +8,20 @@ import sys
 import os
 
 def system_info():
-    """システム情報表示"""
+    """Print system information"""
+
     print("=== System Information ===")
     print(f"Python version: {sys.version}")
     print(f"PyTorch version: {torch.__version__}")
 
-    # CUDA環境変数確認
     cuda_home = os.environ.get('CUDA_HOME', 'Not set')
     ld_library_path = os.environ.get('LD_LIBRARY_PATH', 'Not set')
     print(f"CUDA_HOME: {cuda_home}")
     print(f"LD_LIBRARY_PATH: {ld_library_path}")
 
 def cuda_detection():
-    """CUDA検出テスト"""
+    """Check if CUDA is available and print GPU details"""
+
     print("\n=== CUDA Detection ===")
 
     print(f"CUDA available: {torch.cuda.is_available()}")
@@ -32,7 +33,6 @@ def cuda_detection():
     print(f"cuDNN version: {torch.backends.cudnn.version()}")
     print(f"GPU count: {torch.cuda.device_count()}")
 
-    # 各GPU情報
     for i in range(torch.cuda.device_count()):
         print(f"GPU {i}:")
         print(f"  Name: {torch.cuda.get_device_name(i)}")
@@ -42,25 +42,22 @@ def cuda_detection():
     return True
 
 def memory_test():
-    """GPU メモリテスト"""
+    """Test GPU memory allocation and deallocation"""
+
     print("\n=== GPU Memory Test ===")
 
     try:
-        # 各GPUでメモリテスト
         for i in range(torch.cuda.device_count()):
             torch.cuda.set_device(i)
             print(f"Testing GPU {i}...")
 
-            # 小さなテンソル
             x = torch.rand(100, 100, device=f'cuda:{i}')
             print(f"  Small tensor OK on GPU {i}")
 
-            # メモリ使用量確認
             memory_allocated = torch.cuda.memory_allocated(i) / 1024**2
             memory_reserved = torch.cuda.memory_reserved(i) / 1024**2
             print(f"  Memory - Allocated: {memory_allocated:.1f}MB, Reserved: {memory_reserved:.1f}MB")
 
-            # メモリクリア
             del x
             torch.cuda.empty_cache()
 
@@ -72,31 +69,27 @@ def memory_test():
         return False
 
 def kernel_test():
-    """CUDA カーネルテスト"""
+    """Test basic CUDA kernel operations"""
+
     print("\n=== CUDA Kernel Test ===")
 
     try:
-        # シンプルな演算テスト
         print("Testing basic operations...")
         a = torch.rand(1000, 1000, device='cuda')
         b = torch.rand(1000, 1000, device='cuda')
 
-        # 加算
         c = a + b
         print("  Addition: OK")
 
-        # 行列乗算
         d = torch.matmul(a, b)
         print("  Matrix multiplication: OK")
 
-        # GPU間転送テスト（複数GPU場合）
         if torch.cuda.device_count() > 1:
             print("Testing multi-GPU operations...")
             a_gpu0 = torch.rand(100, 100, device='cuda:0')
             a_gpu1 = a_gpu0.to('cuda:1')
             print("  Multi-GPU transfer: OK")
 
-        # CPU-GPU転送
         cpu_tensor = d.cpu()
         gpu_tensor = cpu_tensor.cuda()
         print("  CPU-GPU transfer: OK")
@@ -117,13 +110,13 @@ def kernel_test():
         return False
 
 def model_test():
-    """Neural Networkモデルテスト"""
+    """Test loading and running a simple model on GPU"""
+
     print("\n=== Neural Network Model Test ===")
 
     try:
         import torch.nn as nn
 
-        # シンプルなモデル
         model = nn.Sequential(
             nn.Linear(784, 256),
             nn.ReLU(),
@@ -136,13 +129,11 @@ def model_test():
         model = model.cuda()
         print("  Model transfer: OK")
 
-        # ダミーデータで推論
         print("Testing inference...")
         x = torch.rand(32, 784, device='cuda')
         output = model(x)
         print("  Inference: OK")
 
-        # 逆伝播テスト
         print("Testing backpropagation...")
         loss_fn = nn.CrossEntropyLoss()
         target = torch.randint(0, 10, (32,), device='cuda')
@@ -158,29 +149,27 @@ def model_test():
         return False
 
 def yolo_compatibility():
-    """YOLO互換性テスト"""
+    """Test YOLO model loading and inference on GPU"""
+
     print("\n=== YOLO Compatibility Test ===")
 
     try:
         from ultralytics import YOLO
 
         print("Loading smallest YOLO model...")
-        model = YOLO('yolov8n.pt')  # 最小モデル
+        model = YOLO('yolov8n.pt')
 
         print("Testing CPU inference first...")
         import numpy as np
         dummy_img = np.random.randint(0, 255, (320, 320, 3), dtype=np.uint8)
 
-        # CPU推論
         results = model(dummy_img, device='cpu', verbose=False)
         print("  CPU inference: OK")
 
-        # GPU推論テスト
         print("Testing GPU inference...")
         results = model(dummy_img, device='cuda', verbose=False)
         print("  GPU inference: OK")
 
-        # モデル情報
         print("Testing model info...")
         model.info(verbose=False)
         print("  Model info: OK")
@@ -194,10 +183,10 @@ def yolo_compatibility():
         return False
 
 def recommendations():
-    """推奨事項"""
+    """Print recommendations based on test results"""
+
     print("\n=== Recommendations ===")
 
-    # PyTorchバージョン確認
     torch_version = torch.__version__
     cuda_version = torch.version.cuda if torch.cuda.is_available() else "None"
 
@@ -217,11 +206,11 @@ def recommendations():
     print("  - Consider updating CUDA toolkit to 11.6 or 11.8")
 
 def main():
-    """メイン診断関数"""
+    """Run all diagnostic tests"""
+
     print("CUDA 11.5 + Compute Capability 6.1 Diagnostic Tool")
     print("=" * 60)
 
-    # 段階的診断
     system_info()
 
     if not cuda_detection():

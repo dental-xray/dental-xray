@@ -1,15 +1,19 @@
+import mlflow.artifacts
+import tempfile
+import os
 from disease_recognition.params import *
+from mlflow import MlflowClient
+
 
 def verify_mlflow_upload(mlflow_model_name):
-    """MLflowアップロードの確認（アーティファクト対応版）"""
-    from mlflow import MlflowClient
+    """Verify if the model is correctly uploaded to MLflow and can be downloaded"""
 
     print("=== MLflow Upload Verification ===")
+    print(f"mlflow_model_name: {mlflow_model_name}")
 
     try:
         client = MlflowClient()
 
-        # 1. モデルレジストリの確認
         latest_versions = client.get_latest_versions(mlflow_model_name, stages=["None"])
 
         if not latest_versions:
@@ -22,7 +26,6 @@ def verify_mlflow_upload(mlflow_model_name):
         print(f"  Status: {model_version.status}")
         print(f"  Source: {model_version.source}")
 
-        # 2. ダウンロードテストで詳細確認
         print("\n🔄 Testing download capability...")
         return test_model_download_enhanced(mlflow_model_name, model_version.version)
 
@@ -31,10 +34,11 @@ def verify_mlflow_upload(mlflow_model_name):
         return False
 
 def test_model_download_enhanced(mlflow_model_name, version):
-    """拡張されたダウンロードテスト"""
-    import mlflow.artifacts
-    import tempfile
-    import os
+    """Enhanced test to download and inspect the model artifacts from MLflow"""
+
+    print(f"=== Testing download for model: {mlflow_model_name}, version: {version} ===")
+    print(f"mlflow_model_name: {mlflow_model_name}")
+    print(f"version: {version}")
 
     try:
         model_uri = f"models:/{mlflow_model_name}/{version}"
@@ -44,7 +48,6 @@ def test_model_download_enhanced(mlflow_model_name, version):
             artifact_path = mlflow.artifacts.download_artifacts(model_uri, dst_path=temp_dir)
             print(f"Downloaded to: {artifact_path}")
 
-            # 全ファイル構造を表示
             print("\n=== Downloaded Structure ===")
             all_files = []
             pt_files = []
@@ -63,7 +66,6 @@ def test_model_download_enhanced(mlflow_model_name, version):
                     print(f"{subindent}{file} ({file_size:,} bytes)")
                     all_files.append(rel_path)
 
-                    # .ptファイルをチェック
                     if file.endswith('.pt'):
                         pt_files.append(file_path)
                         print(f"{subindent}🎯 PyTorch model found!")
@@ -78,7 +80,6 @@ def test_model_download_enhanced(mlflow_model_name, version):
                     size = os.path.getsize(pt_file)
                     print(f"  - {os.path.basename(pt_file)}: {size:,} bytes")
 
-                    # YOLOロードテスト
                     try:
                         from ultralytics import YOLO
                         test_model = YOLO(pt_file)
@@ -91,7 +92,6 @@ def test_model_download_enhanced(mlflow_model_name, version):
             else:
                 print("❌ No .pt files found anywhere")
 
-                # MLmodelファイルの内容確認
                 mlmodel_path = os.path.join(artifact_path, "MLmodel")
                 if os.path.exists(mlmodel_path):
                     print("\n=== MLmodel Content ===")
@@ -106,14 +106,13 @@ def test_model_download_enhanced(mlflow_model_name, version):
         return False
 
 def comprehensive_mlflow_check(mlflow_model_name):
-    """包括的なMLflow確認"""
-    from mlflow import MlflowClient
+    """Perform a comprehensive check of the MLflow model registry"""
 
     print("=== Comprehensive MLflow Check ===")
+    print(f"mlflow_model_name: {mlflow_model_name}")
 
     client = MlflowClient()
 
-    # 1. 登録されたモデル情報
     try:
         registered_model = client.get_registered_model(mlflow_model_name)
         print(f"✅ Registered model: {registered_model.name}")
@@ -123,7 +122,6 @@ def comprehensive_mlflow_check(mlflow_model_name):
     except Exception as e:
         print(f"⚠️  Cannot get registered model info: {e}")
 
-    # 2. 全バージョンの確認
     try:
         all_versions = client.search_model_versions(f"name='{mlflow_model_name}'")
         print(f"\n📋 All versions ({len(all_versions)}):")
@@ -135,7 +133,7 @@ def comprehensive_mlflow_check(mlflow_model_name):
             print(f"    Source: {version.source}")
             print(f"    Run ID: {getattr(version, 'run_id', 'N/A')}")
 
-            if i == 0:  # 最初のバージョンのみテスト
+            if i == 0:
                 print(f"    Testing version {version.version}...")
                 test_result = test_model_download_enhanced(mlflow_model_name, version.version)
                 print(f"    Download test: {'✅ PASS' if test_result else '❌ FAIL'}")
@@ -147,18 +145,11 @@ def comprehensive_mlflow_check(mlflow_model_name):
 
 def main():
     """Main function with enhanced verification"""
+
     print(f"Target model: {MLFLOW_MODEL_NAME}")
 
-    # 基本確認
-    # basic_result = verify_mlflow_upload(MLFLOW_MODEL_NAME)
+    basic_result = verify_mlflow_upload(MLFLOW_MODEL_NAME)
     comprehensive_mlflow_check(MLFLOW_MODEL_NAME)
-
-    # 詳細確認
-    # if not basic_result:
-    #     print("\n" + "="*50)
-    #     print("DETAILED ANALYSIS")
-    #     print("="*50)
-    #     comprehensive_mlflow_check(MLFLOW_MODEL_NAME)
 
 if __name__ == "__main__":
     main()
