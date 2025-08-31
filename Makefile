@@ -2,14 +2,17 @@
 #################### PACKAGE ACTIONS ###################
 install:
 	@pip install -e .
+	@pip install -r requirements.txt
 
 install-api:
-	@echo "do nothing for now"
+	@pip install -e .
+	@pip install -r requirements-api.txt
+
 
 install-model:
 	@pip install -e .
-	@pip uninstall torch torchvision torchaudio
-	@pip install torch==2.7.1+cu118 torchvision==0.22.1+cu118 torchaudio==2.7.1+cu118 --index-url https://download.pytorch.org/whl/cu118
+	@pip install -r requirements-model.txt
+	@pip install torch==2.7.1+cu118 torchvision==0.22.1+cu118 torchaudio2.7.1+cu118 --index-url https://download.pytorch.org/whl/cu118
 
 reinstall:
 	@pip uninstall -y disease_recognition || :

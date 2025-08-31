@@ -39,8 +39,11 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <!-- Local TOC -->
-              <div class="local-toc"></div>
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">src</a></li>
+</ul>
+
         </div>
       </div>
     </nav>
@@ -78,12 +81,24 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">mlflow</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">mlflow.tracking</span><span class="w"> </span><span class="kn">import</span> <span class="n">MlflowClient</span>
 
+<span class="sd">&quot;&quot;&quot;Model-related functions for disease recognition using YOLOv8&quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="save_results">
 <a class="viewcode-back" href="../../disease_recognition.html#disease_recognition.registry.save_results">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">save_results</span><span class="p">(</span><span class="n">model_storage</span><span class="p">,</span> <span class="n">params</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">metrics</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
 
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Save training/validation results to a CSV file&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Save training/validation results to a CSV file</span>
+<span class="sd">    Args:</span>
+<span class="sd">        model_storage (str): The storage option to save results (&quot;local&quot; or &quot;mlflow&quot;)</span>
+<span class="sd">        params (dict): Dictionary of parameters used during training</span>
+<span class="sd">        metrics (dict): Dictionary of metrics obtained during training</span>
+<span class="sd">    Returns:</span>
+<span class="sd">        None</span>
+<span class="sd">    Example:</span>
+<span class="sd">        save_results(&quot;local&quot;, {&quot;epochs&quot;: 100, &quot;batch_size&quot;: 16}, {&quot;mAP&quot;: 0.85, &quot;loss&quot;: 0.1})</span>
+<span class="sd">    Note: Ensure that the model_storage is either &quot;local&quot; or &quot;mlflow&quot;.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;=== Saving results ===&quot;</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;params: </span><span class="si">{</span><span class="n">params</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;metrics: </span><span class="si">{</span><span class="n">metrics</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -101,7 +116,22 @@
 <a class="viewcode-back" href="../../disease_recognition.html#disease_recognition.registry.save_model">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">save_model</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">model_storage</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">bucket_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mlflow_model_name</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Save the trained model to the specified model_storage&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Save the trained model to the specified model_storage</span>
+<span class="sd">    Args:</span>
+<span class="sd">        model (YOLO): The trained YOLO model to be saved</span>
+<span class="sd">        model_storage (str): The storage option to save the model (&quot;local&quot;, &quot;gcs&quot;, or &quot;mlflow&quot;)</span>
+<span class="sd">        path (str): The local path to save the model if model_storage is &quot;local&quot;</span>
+<span class="sd">        filename (str, optional): The filename to save the model as. If None, a timestamped filename will be generated</span>
+<span class="sd">        bucket_name (str, optional): The GCS bucket name if model_storage is &quot;gcs&quot;</span>
+<span class="sd">        mlflow_model_name (str, optional): The registered model name in MLflow if model_storage is &quot;mlflow&quot;</span>
+<span class="sd">    Returns:</span>
+<span class="sd">        None</span>
+<span class="sd">    Example:</span>
+<span class="sd">        save_model(model, &quot;local&quot;, &quot;./models&quot;, &quot;my_model.pt&quot;)</span>
+<span class="sd">        save_model(model, &quot;gcs&quot;, &quot;./models&quot;, bucket_name=&quot;my_bucket&quot;)</span>
+<span class="sd">        save_model(model, &quot;mlflow&quot;, None, mlflow_model_name=&quot;my_mlflow_model&quot;)</span>
+<span class="sd">    Note: Ensure that the model_storage is either &quot;local&quot;, &quot;gcs&quot;, or &quot;mlflow&quot;.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;=== Saving model ===&quot;</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;model_storage: </span><span class="si">{</span><span class="n">model_storage</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -164,7 +194,23 @@
 <a class="viewcode-back" href="../../disease_recognition.html#disease_recognition.registry.load_model">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">load_model</span><span class="p">(</span><span class="n">model_storage</span><span class="p">,</span> <span class="n">stage</span><span class="o">=</span><span class="s2">&quot;Production&quot;</span><span class="p">,</span><span class="n">bucket_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mlflow_tracking_uri</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mlflow_model_name</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Load a model from the specified model_storage&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Load a model from the specified model_storage</span>
+<span class="sd">    Args:</span>
+<span class="sd">        model_storage (str): The storage option to load the model from (&quot;local&quot;, &quot;gcs&quot;, or &quot;mlflow&quot;)</span>
+<span class="sd">        stage (str, optional): The stage of the model to load from MLflow (&quot;Staging&quot; or &quot;Production&quot;). Default is &quot;Production&quot;</span>
+<span class="sd">        bucket_name (str, optional): The GCS bucket name if model_storage is &quot;gcs&quot;</span>
+<span class="sd">        filename (str, optional): The filename of the model to load if model_storage is &quot;local&quot; or &quot;gcs&quot;</span>
+<span class="sd">        path (str, optional): The local path to load the model from if model_storage is &quot;local&quot;</span>
+<span class="sd">        mlflow_tracking_uri (str, optional): The MLflow tracking URI if model_storage is &quot;mlflow&quot;</span>
+<span class="sd">        mlflow_model_name (str, optional): The registered model name in MLflow if model_storage is &quot;mlflow&quot;</span>
+<span class="sd">    Returns:</span>
+<span class="sd">        model (YOLO or pyfunc): The loaded YOLO model or MLflow pyfunc model</span>
+<span class="sd">    Example:</span>
+<span class="sd">        model = load_model(&quot;local&quot;, path=&quot;./models&quot;, filename=&quot;my_model.pt&quot;)</span>
+<span class="sd">        model = load_model(&quot;gcs&quot;, bucket_name=&quot;my_bucket&quot;, filename=&quot;my_model.pt&quot;)</span>
+<span class="sd">        model = load_model(&quot;mlflow&quot;, mlflow_tracking_uri=&quot;http://localhost:5000&quot;, mlflow_model_name=&quot;my_mlflow_model&quot;, stage=&quot;Production&quot;)</span>
+<span class="sd">    Note: Ensure that the model_storage is either &quot;local&quot;, &quot;gcs&quot;, or &quot;mlflow&quot;.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;=== Loading model ===&quot;</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;model_storage: </span><span class="si">{</span><span class="n">model_storage</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -233,7 +279,16 @@
 <div class="viewcode-block" id="mlflow_transition_model">
 <a class="viewcode-back" href="../../disease_recognition.html#disease_recognition.registry.mlflow_transition_model">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">mlflow_transition_model</span><span class="p">(</span><span class="n">current_stage</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">new_stage</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Transition a model to a new stage in MLflow&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Transition a model to a new stage in MLflow</span>
+<span class="sd">    Args:</span>
+<span class="sd">        current_stage (str): The current stage of the model (&quot;Staging&quot; or &quot;Production&quot;)</span>
+<span class="sd">        new_stage (str): The new stage to transition the model to (&quot;Staging&quot; or &quot;Production&quot;)</span>
+<span class="sd">    Returns:</span>
+<span class="sd">        None</span>
+<span class="sd">    Example:</span>
+<span class="sd">        mlflow_transition_model(&quot;Staging&quot;, &quot;Production&quot;)</span>
+<span class="sd">    Note: Ensure that the stages are either &quot;Staging&quot; or &quot;Production&quot;.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;=== Transitioning model stage in MLflow ===&quot;</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;current stage: </span><span class="si">{</span><span class="n">current_stage</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -250,7 +305,15 @@
 <a class="viewcode-back" href="../../disease_recognition.html#disease_recognition.registry.mlflow_run">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">mlflow_run</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
 
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Decorator to run a function within an MLflow run context&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Decorator to run a function within an MLflow run context</span>
+<span class="sd">    Args:</span>
+<span class="sd">        func (function): The function to be executed within the MLflow run context</span>
+<span class="sd">    Returns:</span>
+<span class="sd">        function: The wrapped function that runs within the MLflow context</span>
+<span class="sd">    Example:</span>
+<span class="sd">        @mlflow_run</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;=== Running function within MLflow run context ===&quot;</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;function: </span><span class="si">{</span><span class="n">func</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
