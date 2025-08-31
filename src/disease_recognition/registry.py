@@ -10,10 +10,22 @@ from google.cloud import storage
 import mlflow
 from mlflow.tracking import MlflowClient
 
+"""Model-related functions for disease recognition using YOLOv8"""
 
 def save_results(model_storage, params: dict, metrics: dict):
 
-    """Save training/validation results to a CSV file"""
+    """Save training/validation results to a CSV file
+    Args:
+        model_storage (str): The storage option to save results ("local" or "mlflow")
+        params (dict): Dictionary of parameters used during training
+        metrics (dict): Dictionary of metrics obtained during training
+    Returns:
+        None
+    Example:
+        save_results("local", {"epochs": 100, "batch_size": 16}, {"mAP": 0.85, "loss": 0.1})
+    Note: Ensure that the model_storage is either "local" or "mlflow".
+    """
+
     print("=== Saving results ===")
     print(f"params: {params}")
     print(f"metrics: {metrics}")
@@ -28,7 +40,22 @@ def save_results(model_storage, params: dict, metrics: dict):
 
 def save_model(model, model_storage, path, filename=None, bucket_name=None, mlflow_model_name=None):
 
-    """Save the trained model to the specified model_storage"""
+    """Save the trained model to the specified model_storage
+    Args:
+        model (YOLO): The trained YOLO model to be saved
+        model_storage (str): The storage option to save the model ("local", "gcs", or "mlflow")
+        path (str): The local path to save the model if model_storage is "local"
+        filename (str, optional): The filename to save the model as. If None, a timestamped filename will be generated
+        bucket_name (str, optional): The GCS bucket name if model_storage is "gcs"
+        mlflow_model_name (str, optional): The registered model name in MLflow if model_storage is "mlflow"
+    Returns:
+        None
+    Example:
+        save_model(model, "local", "./models", "my_model.pt")
+        save_model(model, "gcs", "./models", bucket_name="my_bucket")
+        save_model(model, "mlflow", None, mlflow_model_name="my_mlflow_model")
+    Note: Ensure that the model_storage is either "local", "gcs", or "mlflow".
+    """
 
     print("=== Saving model ===")
     print(f"model_storage: {model_storage}")
@@ -88,7 +115,23 @@ def save_model(model, model_storage, path, filename=None, bucket_name=None, mlfl
 
 def load_model(model_storage, stage="Production",bucket_name=None, filename=None, path=None, mlflow_tracking_uri=None, mlflow_model_name=None):
 
-    """Load a model from the specified model_storage"""
+    """Load a model from the specified model_storage
+    Args:
+        model_storage (str): The storage option to load the model from ("local", "gcs", or "mlflow")
+        stage (str, optional): The stage of the model to load from MLflow ("Staging" or "Production"). Default is "Production"
+        bucket_name (str, optional): The GCS bucket name if model_storage is "gcs"
+        filename (str, optional): The filename of the model to load if model_storage is "local" or "gcs"
+        path (str, optional): The local path to load the model from if model_storage is "local"
+        mlflow_tracking_uri (str, optional): The MLflow tracking URI if model_storage is "mlflow"
+        mlflow_model_name (str, optional): The registered model name in MLflow if model_storage is "mlflow"
+    Returns:
+        model (YOLO or pyfunc): The loaded YOLO model or MLflow pyfunc model
+    Example:
+        model = load_model("local", path="./models", filename="my_model.pt")
+        model = load_model("gcs", bucket_name="my_bucket", filename="my_model.pt")
+        model = load_model("mlflow", mlflow_tracking_uri="http://localhost:5000", mlflow_model_name="my_mlflow_model", stage="Production")
+    Note: Ensure that the model_storage is either "local", "gcs", or "mlflow".
+    """
 
     print("=== Loading model ===")
     print(f"model_storage: {model_storage}")
@@ -154,7 +197,16 @@ def load_model(model_storage, stage="Production",bucket_name=None, filename=None
 
 
 def mlflow_transition_model(current_stage: str, new_stage: str):
-    """Transition a model to a new stage in MLflow"""
+    """Transition a model to a new stage in MLflow
+    Args:
+        current_stage (str): The current stage of the model ("Staging" or "Production")
+        new_stage (str): The new stage to transition the model to ("Staging" or "Production")
+    Returns:
+        None
+    Example:
+        mlflow_transition_model("Staging", "Production")
+    Note: Ensure that the stages are either "Staging" or "Production".
+    """
 
     print("=== Transitioning model stage in MLflow ===")
     print(f"current stage: {current_stage}")
@@ -168,7 +220,15 @@ def mlflow_transition_model(current_stage: str, new_stage: str):
 
 def mlflow_run(func):
 
-    """Decorator to run a function within an MLflow run context"""
+    """Decorator to run a function within an MLflow run context
+    Args:
+        func (function): The function to be executed within the MLflow run context
+    Returns:
+        function: The wrapped function that runs within the MLflow context
+    Example:
+        @mlflow_run
+    """
+
     print("=== Running function within MLflow run context ===")
     print(f"function: {func.__name__}")
 

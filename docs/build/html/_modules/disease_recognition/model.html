@@ -39,8 +39,11 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <!-- Local TOC -->
-              <div class="local-toc"></div>
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">src</a></li>
+</ul>
+
         </div>
       </div>
     </nav>
@@ -71,12 +74,23 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">disease_recognition.params</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span>
 
+<span class="sd">&quot;&quot;&quot;Model-related functions for disease recognition using YOLOv8&quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="init_model">
 <a class="viewcode-back" href="../../disease_recognition.html#disease_recognition.model.init_model">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">init_model</span> <span class="p">(</span><span class="n">input_shape</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">init_model</span> <span class="p">(</span><span class="n">input_shape</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">YOLO</span><span class="p">:</span>
 
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Initialize the YOLO model with the given input shape&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Initialize the YOLO model with the given input shape</span>
+<span class="sd">    Args:</span>
+<span class="sd">        input_shape (tuple): The desired input shape for the model (height, width)</span>
+<span class="sd">    Returns:</span>
+<span class="sd">        model (YOLO): The initialized YOLO model</span>
+<span class="sd">    Raise:s:</span>
+<span class="sd">        ValueError: If the input_shape is not a tuple of two integers</span>
+<span class="sd">    Example:</span>
+<span class="sd">        model = init_model((420, 420))</span>
+<span class="sd">    Note: YOLOv8 does not require explicit input shape setting during initialization.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;=== Initializing model ===&quot;</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;input_shape: </span><span class="si">{</span><span class="n">input_shape</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -89,9 +103,25 @@
 
 <div class="viewcode-block" id="train_model">
 <a class="viewcode-back" href="../../disease_recognition.html#disease_recognition.model.train_model">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">train_model</span> <span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="s2">&quot;yolov8n.pt&quot;</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="s2">&quot;cpu&quot;</span><span class="p">,</span> <span class="n">epochs</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">batch</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">imgsz</span><span class="o">=</span><span class="mi">420</span><span class="p">,</span> <span class="n">patience</span><span class="o">=</span><span class="mi">50</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">train_model</span> <span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">weights</span><span class="p">:</span> <span class="n">YOLO</span> <span class="o">=</span><span class="s2">&quot;yolov8n.pt&quot;</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="s2">&quot;cpu&quot;</span><span class="p">,</span> <span class="n">epochs</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">batch</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">imgsz</span><span class="o">=</span><span class="mi">420</span><span class="p">,</span> <span class="n">patience</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">YOLO</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">]:</span>
 
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Train the YOLO model with the given parameters&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Train the YOLO model with the given parameters</span>
+<span class="sd">    Args:</span>
+<span class="sd">        data (str): Path to the dataset configuration file</span>
+<span class="sd">        weights (YOLO): Pre-trained weights to start training from</span>
+<span class="sd">        device (str): Device to use for training (&quot;cpu&quot; or &quot;cuda&quot;)</span>
+<span class="sd">        epochs (int): Number of training epochs</span>
+<span class="sd">        batch (int): Batch size for training</span>
+<span class="sd">        imgsz (int): Image size for training</span>
+<span class="sd">        patience (int): Number of epochs with no improvement to stop training early</span>
+<span class="sd">    Returns:</span>
+<span class="sd">        model (YOLO): The trained YOLO model</span>
+<span class="sd">        results (pd.DataFrame): DataFrame containing training results and metrics</span>
+<span class="sd">    Example:</span>
+<span class="sd">        model, results = train_model(&quot;data.yaml&quot;, weights=&quot;yolov8n.pt&quot;, device=&quot;cuda&quot;, epochs=50, batch=16, imgsz=640, patience=10)</span>
+<span class="sd">    Note: Ensure that the dataset is properly formatted and the data.yaml file is correctly set up.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;=== Training model ===&quot;</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;data: </span><span class="si">{</span><span class="n">data</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;weights: </span><span class="si">{</span><span class="n">weights</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -122,9 +152,22 @@
 
 <div class="viewcode-block" id="val_model">
 <a class="viewcode-back" href="../../disease_recognition.html#disease_recognition.model.val_model">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">val_model</span> <span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">weights</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="s2">&quot;cpu&quot;</span><span class="p">,</span> <span class="n">batch</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span> <span class="n">imgsz</span><span class="o">=</span><span class="mi">420</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">val_model</span> <span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">weights</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="s2">&quot;cpu&quot;</span><span class="p">,</span> <span class="n">batch</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span> <span class="n">imgsz</span><span class="o">=</span><span class="mi">420</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">YOLO</span><span class="p">:</span>
 
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Validate the YOLO model with the given parameters&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Validate the YOLO model with the given parameters</span>
+<span class="sd">    Args:</span>
+<span class="sd">        data (str): Path to the dataset configuration file</span>
+<span class="sd">        weights (str): Path to the trained model weights</span>
+<span class="sd">        device (str): Device to use for validation (&quot;cpu&quot; or &quot;cuda&quot;)</span>
+<span class="sd">        batch (int): Batch size for validation</span>
+<span class="sd">        imgsz (int): Image size for validation</span>
+<span class="sd">    Returns:</span>
+<span class="sd">        results (YOLO): The validation results object containing metrics</span>
+<span class="sd">    Example:</span>
+<span class="sd">        results = val_model(&quot;data.yaml&quot;, &quot;best.pt&quot;, device=&quot;cuda&quot;, batch=16, imgsz=640)</span>
+<span class="sd">    Note: Ensure that the dataset is properly formatted and the data.yaml file is correctly set up.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;=== Validating model ===&quot;</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;data: </span><span class="si">{</span><span class="n">data</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;weights: </span><span class="si">{</span><span class="n">weights</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>

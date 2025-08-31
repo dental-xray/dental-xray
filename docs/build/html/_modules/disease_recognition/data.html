@@ -39,8 +39,11 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <!-- Local TOC -->
-              <div class="local-toc"></div>
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">src</a></li>
+</ul>
+
         </div>
       </div>
     </nav>
@@ -69,11 +72,24 @@
 <span></span><span class="kn">import</span><span class="w"> </span><span class="nn">kagglehub</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">disease_recognition.params</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
 
+<span class="sd">&quot;&quot;&quot;Data loading functions for disease recognition project&quot;&quot;&quot;</span>
+
 <div class="viewcode-block" id="load_data">
 <a class="viewcode-back" href="../../disease_recognition.html#disease_recognition.data.load_data">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">load_data</span><span class="p">(</span><span class="n">dataset</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">load_data</span><span class="p">(</span><span class="n">dataset</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Load dataset from Kaggle Hub&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Load dataset from Kaggle Hub</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        dataset (str): The Kaggle dataset identifier in the format &quot;username/dataset-name&quot;</span>
+<span class="sd">    Returns:</span>
+<span class="sd">        str: The local path where the dataset is downloaded</span>
+<span class="sd">    Raises:</span>
+<span class="sd">        ValueError: If the dataset identifier is invalid or the download fails</span>
+<span class="sd">    Example:</span>
+<span class="sd">        path = load_data(&quot;username/dataset-name&quot;)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;=== Loading dataset from Kaggle Hub ===&quot;</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Dataset: </span><span class="si">{</span><span class="n">dataset</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
