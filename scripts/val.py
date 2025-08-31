@@ -8,7 +8,7 @@ import os
 
 def parse_args():
     parser = argparse.ArgumentParser(description='YOLO Validation Script')
-    parser.add_argument('--output', type=str, default="trained_model.pt.val.csv", help='file to save confusion matrix')
+    parser.add_argument('--output', required=True, type=str, default="trained_model.pt.val.csv", help='file to save confusion matrix')
     parser.add_argument('--weights', type=str, required=True, help='model weights path')
     parser.add_argument('--batch', type=int, default=16, help='batch size')
     parser.add_argument('--imgsz', type=int, default=640, help='image size')

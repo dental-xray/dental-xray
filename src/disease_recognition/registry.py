@@ -4,19 +4,32 @@ from disease_recognition.params import *
 from datetime import datetime
 from PIL import Image
 import os
-
+from google.cloud import storage
+# from tensorflow import keras
+import mlflow
+from mlflow.tracking import MlflowClient
 
 def save_results(params: dict, metrics: dict):
 
     """Save training/validation results to a CSV file"""
-    pass
+    print("=== Saving results ===")
+    print(f"params: {params}")
+    print(f"metrics: {metrics}")
 
-def save_model(model, storage, path, filename=None):
+    if MODEL_TARGET == "mlflow":
+        if params is not None:
+            mlflow.log_params(params)
+        if metrics is not None:
+            mlflow.log_metrics(metrics)
+        print("✅ Results saved on mlflow")
 
-    """Save the trained model to the specified storage"""
+
+def save_model(model, model_storage, path, filename=None):
+
+    """Save the trained model to the specified model_storage"""
 
     print("=== Saving model ===")
-    print(f"storage: {storage}")
+    print(f"model_storage: {model_storage}")
     print(f"path: {path}")
     print(f"filename: {filename}")
 
@@ -29,26 +42,27 @@ def save_model(model, storage, path, filename=None):
 
     print("✅ Model saved locally")
 
-    if storage == "local":
+    if model_storage == "local":
         pass
 
-    elif storage == "gcs":
-        # # 🎁 We give you this piece of code as a gift. Please read it carefully! Add a breakpoint if needed!
+    elif model_storage == "gcs":
 
-        # model_filename = model_path.split("/")[-1] # e.g. "20230208-161047.h5" for instance
-        # client = storage.Client()
-        # bucket = client.bucket(BUCKET_NAME)
-        # blob = bucket.blob(f"models/{model_filename}")
-        # blob.upload_from_filename(model_path)
+        client = storage.Client()
+        bucket = client.bucket(BUCKET_NAME)
+        blob = bucket.blob(f"models/{filename}")
+        blob.upload_from_filename(model_path)
 
         print("✅ Model saved to GCS")
 
-    elif storage == "mlflow":
-        # mlflow.tensorflow.log_model(
-        #     model=model,
-        #     artifact_path="model",
-        #     registered_model_name=MLFLOW_MODEL_NAME
-        # )
+        return None
+
+    elif model_storage == "mlflow":
+
+        mlflow.tensorflow.log_model(
+            model=model,
+            artifact_path="model",
+            registered_model_name=MLFLOW_MODEL_NAME
+        )
 
         print("✅ Model saved to MLflow")
 
@@ -60,40 +74,45 @@ def save_model(model, storage, path, filename=None):
     return None
 
 
-def load_model(storage, stage="Production",filename=None, path=None):
+def load_model(model_storage, stage="Production",bucket_name=None, filename=None, path=None):
 
-    """Load a model from the specified storage"""
+    """Load a model from the specified model_storage"""
 
     print("=== Loading model ===")
-    print(f"storage: {storage}")
+    print(f"model_storage: {model_storage}")
     print(f"stage: {stage}")
     print(f"filename: {filename}")
     print(f"path: {path}")
 
-    if storage == "local":
+    if model_storage == "local":
         model = YOLO(os.path.join(path, filename))
 
         print("✅ Model loaded from local file")
 
-    elif storage == "gcs":
-        # # 🎁 We give you this piece of code as a gift. Please read it carefully! Add a breakpoint if needed!
+    elif model_storage == "gcs":
 
-        # client = storage.Client()
-        # bucket = client.bucket(BUCKET_NAME)
-        # blobs = list(bucket.list_blobs(prefix="models/"))
+        client = storage.Client()
+        bucket = client.get_bucket(bucket_name)
+        blobs = list(bucket.list_blobs(prefix="models/"))
 
-        # if len(blobs) == 0:
-        #     raise ValueError("No model found in GCS bucket")
+        if len(blobs) == 0:
+            raise ValueError("No model found in GCS bucket")
 
-        # latest_blob = max(blobs, key=lambda b: b.updated)
-        # model_filename = latest_blob.name.split("/")[-1]
-        # local_path = os.path.join("/tmp", model_filename)
-        # latest_blob.download_to_filename(local_path)
+        if filename is not None:
+            blob_name = f"models/{filename}"
 
-        # model = YOLO(local_path)
+            blob = bucket.blob(blob_name)
+        else:
+            blob = max(blobs, key=lambda b: b.updated)
+            filename = blob.name.split("/")[-1]
+
+        local_path = os.path.join(path, filename)
+        blob.download_to_filename(local_path)
+
+        model = YOLO(local_path)
         print("✅ Model loaded from GCS")
 
-    elif storage == "mlflow":
+    elif model_storage == "mlflow":
         # # 🎁 We give you this piece of code as a gift. Please read it carefully! Add a breakpoint if needed!
 
         # import mlflow

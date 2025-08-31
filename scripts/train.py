@@ -7,13 +7,12 @@ from disease_recognition.registry import *
 
 def parse_args():
     parser = argparse.ArgumentParser(description='YOLO Training Script')
-    parser.add_argument('--output', type=str, default="trained_model.pt", help='output model file')
+    parser.add_argument('--output', required=True, type=str, default="trained_model.pt", help='output model file')
     parser.add_argument('--weights', type=str, default=WEIGHTS_TRAIN, help='initial weights path')
     parser.add_argument('--epochs', type=int, default=EPOCHS, help='number of epochs')
     parser.add_argument('--batch-size', type=int, default=BATCH_SIZE, help='batch size')
     parser.add_argument('--imgsz', type=int, default=IMG_SIZE, help='image size')
     parser.add_argument('--device', type=str, default=DEVICE, help='device (cpu or gpu id)')
-
 
     return parser.parse_args()
 
@@ -47,7 +46,9 @@ def main():
         batch=args.batch_size
     )
 
-    save_model(model, storage="local", path=LOCAL_REGISTRY_PATH, filename=args.output)
+    # model = load_model(model_storage="gcs", bucket_name=BUCKET_NAME, path=LOCAL_REGISTRY_PATH, filename="test.pt")
+
+    save_model(model, model_storage=MODEL_STORAGE, path=LOCAL_REGISTRY_PATH, filename=args.output)
 
 if __name__ == '__main__':
     main()
