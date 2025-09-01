@@ -46,7 +46,7 @@ def main():
     )
 
     # model = load_model(model_storage="local", stage="None", bucket_name=BUCKET_NAME, path=LOCAL_REGISTRY_PATH, filename="trained_model_5epoch.pt", mlflow_model_name=MLFLOW_MODEL_NAME)
-    save_model(model, model_storage=MODEL_STORAGE, path=LOCAL_REGISTRY_PATH, filename=args.output, mlflow_model_name=MLFLOW_MODEL_NAME)
+    save_model(model, model_storage=MODEL_STORAGE, path=LOCAL_REGISTRY_PATH, filename=args.output, bucket_name=BUCKET_NAME, mlflow_model_name=MLFLOW_MODEL_NAME)
 
 
 if __name__ == '__main__':
