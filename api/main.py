@@ -1,6 +1,6 @@
 import os
 
-from src.disease_recognition.predict import predict, PredictionResult
+from api import predict, PredictionResult
 from src.disease_recognition.registry import load_model
 
 # Load the data and model at startup
