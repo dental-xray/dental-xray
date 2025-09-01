@@ -83,6 +83,8 @@ def save_model(model, model_storage, path, filename=None, bucket_name=None, mlfl
 
     elif model_storage == "gcs":
 
+        print("🚀 Starting upload the model onto GCS...")
+
         client = storage.Client()
         bucket = client.bucket(bucket_name)
         blob = bucket.blob(f"models/{filename}")
@@ -95,7 +97,7 @@ def save_model(model, model_storage, path, filename=None, bucket_name=None, mlfl
     elif model_storage == "mlflow":
 
         try:
-            print("🚀 Starting MLflow upload...")
+            print("🚀 Starting upload the model onto MLflow...")
 
             mlflow.pytorch.log_model(
                 pytorch_model=model,
@@ -189,7 +191,7 @@ def load_model(model_storage, stage="Production",bucket_name=None, filename=None
         print(f"Model URI: {model_uri}")
 
         try:
-            model = mlflow.pyfunc.load_model(model_uri)
+            model = mlflow.pytorch.load_model(model_uri)
             print("✅ Model loaded from MLflow")
 
         except Exception as e:
