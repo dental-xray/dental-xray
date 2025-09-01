@@ -61,6 +61,8 @@ def save_model(model, model_storage, path, filename=None, bucket_name=None, mlfl
     print(f"model_storage: {model_storage}")
     print(f"path: {path}")
     print(f"filename: {filename}")
+    print(f"bucket_name: {bucket_name}")
+    print(f"mlflow_model_name: {mlflow_model_name}")
 
     if filename is None:
         current_time = datetime.now().strftime("%Y%m%d%H%M%S")
