@@ -38,7 +38,7 @@ def save_results(model_storage, params: dict, metrics: dict):
         print("✅ Results saved on mlflow")
 
 
-def save_model(model, model_storage, path, filename=None, bucket_name=None, mlflow_model_name=None):
+def save_model(model, model_storage, path, filename=None, bucket_name=None, mlflow_tracking_uri=None, mlflow_model_name=None):
 
     """Save the trained model to the specified model_storage
     Args:
@@ -47,6 +47,7 @@ def save_model(model, model_storage, path, filename=None, bucket_name=None, mlfl
         path (str): The local path to save the model if model_storage is "local"
         filename (str, optional): The filename to save the model as. If None, a timestamped filename will be generated
         bucket_name (str, optional): The GCS bucket name if model_storage is "gcs"
+        mlflow_tracking_uri (str, optional): The MLflow tracking URI if model_storage is "mlflow"
         mlflow_model_name (str, optional): The registered model name in MLflow if model_storage is "mlflow"
     Returns:
         None
@@ -62,6 +63,7 @@ def save_model(model, model_storage, path, filename=None, bucket_name=None, mlfl
     print(f"path: {path}")
     print(f"filename: {filename}")
     print(f"bucket_name: {bucket_name}")
+    print(f"mlflow_tracking_uri: {mlflow_tracking_uri}")
     print(f"mlflow_model_name: {mlflow_model_name}")
 
     if filename is None:
@@ -98,6 +100,8 @@ def save_model(model, model_storage, path, filename=None, bucket_name=None, mlfl
 
         try:
             print("🚀 Starting upload the model onto MLflow...")
+
+            mlflow.set_tracking_uri(mlflow_tracking_uri)
 
             mlflow.pytorch.log_model(
                 pytorch_model=model,
