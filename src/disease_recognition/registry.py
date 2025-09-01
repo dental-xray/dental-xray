@@ -12,6 +12,11 @@ from mlflow.tracking import MlflowClient
 import torch
 import mlflow.artifacts
 import tempfile
+import time
+import tempfile
+import shutil
+import requests
+
 
 """Model-related functions for disease recognition using YOLOv8"""
 
@@ -113,29 +118,6 @@ def save_model(model, model_storage, path, filename=None, bucket_name=None, mlfl
             if os.path.exists(model_path):
                 print(f"Using existing model file: {model_path}")
 
-                # Custom PyFunc wrapper to load YOLO model
-                class YOLOModelWrapper(mlflow.pyfunc.PythonModel):
-                    def load_context(self, context):
-                        from ultralytics import YOLO
-                        model_file = context.artifacts["yolo_model"]
-                        self.model = YOLO(model_file)
-                        print("YOLO model loaded successfully")
-
-                    def predict(self, context, model_input):
-                        results = self.model(model_input)
-
-                        output = []
-                        for result in results:
-                            if result.boxes is not None:
-                                output.append({
-                                    "boxes": result.boxes.xyxy.cpu().numpy().tolist(),
-                                    "scores": result.boxes.conf.cpu().numpy().tolist(),
-                                    "classes": result.boxes.cls.cpu().numpy().tolist()
-                                })
-                            else:
-                                output.append({"boxes": [], "scores": [], "classes": []})
-                        return output
-
                 # Save the YOLO model as a PyFunc model in MLflow
                 mlflow.pyfunc.log_model(
                     artifact_path="model",
@@ -161,7 +143,7 @@ def save_model(model, model_storage, path, filename=None, bucket_name=None, mlfl
     return None
 
 
-def load_model(model_storage, stage="Production",bucket_name=None, filename=None, path=None, mlflow_tracking_uri=None, mlflow_model_name=None):
+def load_model(model_storage, filename, path, stage="Production",bucket_name=None, mlflow_tracking_uri=None, mlflow_model_name=None):
 
     """Load a model from the specified model_storage
     Args:
@@ -195,62 +177,79 @@ def load_model(model_storage, stage="Production",bucket_name=None, filename=None
         print("✅ Model loaded from local file")
 
     elif model_storage == "gcs":
-        print(Fore.BLUE + f"\nLoad latest model from GCS..." + Style.RESET_ALL)
-
-        client = storage.Client()
-        bucket = client.get_bucket(bucket_name)
-        blobs = list(bucket.list_blobs(prefix="models/"))
-
-        if len(blobs) == 0:
-            raise ValueError("No model found in GCS bucket")
-
-        if filename is not None:
-            blob_name = f"models/{filename}"
-
-            blob = bucket.blob(blob_name)
-        else:
-            blob = max(blobs, key=lambda b: b.updated)
-            filename = blob.name.split("/")[-1]
 
         local_path = os.path.join(path, filename)
-        blob.download_to_filename(local_path)
+
+        if os.path.exists(local_path):
+            print(f"Using existing local file: {local_path}")
+
+        else:
+
+            print(Fore.BLUE + f"\nLoad latest model from GCS..." + Style.RESET_ALL)
+
+            client = storage.Client()
+            bucket = client.get_bucket(bucket_name)
+            blobs = list(bucket.list_blobs(prefix="models/"))
+
+            if len(blobs) == 0:
+                raise ValueError("No model found in GCS bucket")
+
+            if filename is not None:
+                blob_name = f"models/{filename}"
+
+                blob = bucket.blob(blob_name)
+            else:
+                blob = max(blobs, key=lambda b: b.updated)
+                filename = blob.name.split("/")[-1]
+
+            blob.download_to_filename(local_path)
 
         model = YOLO(local_path)
         print("✅ Model loaded from GCS")
 
     elif model_storage == "mlflow":
 
-        print(Fore.BLUE + f"\nLoad [{stage}] model from MLflow..." + Style.RESET_ALL)
+        local_path = os.path.join(path, filename)
 
-        mlflow.set_tracking_uri(mlflow_tracking_uri)
-        client = MlflowClient()
+        if os.path.exists(local_path):
+            print(f"Using existing local file: {local_path}")
+            model = YOLO(local_path)
+            print("✅ YOLO model loaded successfully")
 
-        try:
-            if stage is None:
-                stage = "None"
+            return model
 
-            model_versions = client.get_latest_versions(name=mlflow_model_name, stages=[stage])
-            if not model_versions:
-                print(f"\n❌ No model found")
+        else:
+
+            print(Fore.BLUE + f"\nLoad [{stage}] model from MLflow..." + Style.RESET_ALL)
+
+            mlflow.set_tracking_uri(mlflow_tracking_uri)
+            client = MlflowClient()
+
+            try:
+                if stage is None:
+                    stage = "None"
+
+                model_versions = client.get_latest_versions(name=mlflow_model_name, stages=[stage])
+                if not model_versions:
+                    print(f"\n❌ No model found")
+                    return None
+
+                model_version = model_versions[0]
+                model_uri = f"models:/{mlflow_model_name}/{model_version.version}"
+                print(f"Model URI: {model_uri}")
+
+            except Exception as e:
+                print(f"\n❌ Error: {e}")
                 return None
 
-            model_version = model_versions[0]
-            model_uri = f"models:/{mlflow_model_name}/{model_version.version}"
-            print(f"Model URI: {model_uri}")
+            # Ignore PyFunc and directly get the .pt file
+            try:
+                print("🔄 Downloading artifacts...")
 
-        except Exception as e:
-            print(f"\n❌ Error: {e}")
-            return None
+                artifact_path = mlflow.artifacts.download_artifacts(model_uri, dst_path=path)
+                print(f"artifact_path: {artifact_path}")
 
-        # Ignore PyFunc and directly get the .pt file
-        try:
-            print("🔄 Downloading artifacts...")
-
-            with tempfile.TemporaryDirectory() as temp_dir:
-                artifact_path = mlflow.artifacts.download_artifacts(model_uri, dst_path=temp_dir)
-
-                # Search for the .pt file (it should be in artifacts/trained_model_5epoch.pt)
-                pt_file = os.path.join(artifact_path, "artifacts", "trained_model_5epoch.pt")
+                pt_file = os.path.join(artifact_path, "artifacts", filename)
 
                 if os.path.exists(pt_file):
                     print(f"✅ Found .pt file: {pt_file}")
@@ -262,13 +261,15 @@ def load_model(model_storage, stage="Production",bucket_name=None, filename=None
                     model.save(local_path)
                     print(f"Model saved locally: {local_path}")
 
-                else:
-                    print("❌ .pt file not found at expected location")
-                    return None
+                    print("✅ YOLO model loaded successfully")
 
-        except Exception as e:
-            print(f"❌ Model load failed: {e}")
-            return None
+                    return model
+
+
+            except Exception as e:
+                print(f"❌ Model load failed: {e}")
+                return None
+
 
     else:
         print("❌ Model storage not recognized")
@@ -277,10 +278,114 @@ def load_model(model_storage, stage="Production",bucket_name=None, filename=None
     print()
     return model
 
-def try_load_mlflow_model(model_uri):
-    """MLflowモデルの段階的読み込み"""
+def download_model_with_retry(model_uri, path, filename, max_retries=3):
 
-    # 1. PyTorchモデルとして試行
+    """Download a model from MLflow with retry logic
+    Args:
+        model_uri (str): The MLflow model URI to download
+        path (str): The local path to save the downloaded model
+        filename (str): The filename to save the model as
+        max_retries (int, optional): Maximum number of retry attempts. Default is 3
+    Returns:
+        model (YOLO or None): The loaded YOLO model or None if download failed
+    Example:
+        model = download_model_with_retry("models:/my_mlflow_model/Production", "./models", "my_model.pt")
+    Note: This function attempts to download the model multiple times in case of failures.
+    """
+
+    for attempt in range(max_retries):
+        try:
+            print(f"🔄 Download attempt {attempt + 1}/{max_retries}...")
+
+            with tempfile.TemporaryDirectory() as temp_dir:
+
+                session = requests.Session()
+                session.timeout = (30, 300)
+
+                artifact_path = mlflow.artifacts.download_artifacts(
+                    model_uri,
+                    dst_path=temp_dir
+                )
+
+                pt_file_candidates = [
+                    os.path.join(artifact_path, "artifacts", "trained_model_5epoch.pt"),
+                    os.path.join(artifact_path, "model", "trained_model_5epoch.pt"),
+                    os.path.join(artifact_path, "trained_model_5epoch.pt")
+                ]
+
+                pt_file = None
+                for candidate in pt_file_candidates:
+                    if os.path.exists(candidate):
+                        pt_file = candidate
+                        break
+
+                if pt_file is None:
+                    print("🔍 Searching all directories for .pt files...")
+                    for root, dirs, files in os.walk(artifact_path):
+                        for file in files:
+                            if file.endswith('.pt'):
+                                pt_file = os.path.join(root, file)
+                                print(f"Found: {pt_file}")
+                                break
+                        if pt_file:
+                            break
+
+                if pt_file and os.path.exists(pt_file):
+                    print(f"✅ Found .pt file: {pt_file}")
+
+                    file_size = os.path.getsize(pt_file)
+                    print(f"File size: {file_size / (1024*1024):.1f} MB")
+
+                    if file_size < 1024:
+                        print("⚠️  File seems corrupted (too small)")
+                        if attempt < max_retries - 1:
+                            time.sleep(2 ** attempt)
+                            continue
+
+                    model = YOLO(pt_file)
+                    print("✅ YOLO model loaded successfully")
+
+                    if path and filename:
+                        local_path = os.path.join(path, filename)
+                        os.makedirs(path, exist_ok=True)
+
+                        shutil.copy2(pt_file, local_path)
+                        print(f"Model saved locally: {local_path}")
+
+                        final_model = YOLO(local_path)
+                        return final_model
+                    else:
+                        return model
+                else:
+                    print(f"❌ .pt file not found (attempt {attempt + 1})")
+                    if attempt < max_retries - 1:
+                        time.sleep(2 ** attempt)
+                        continue
+
+        except Exception as e:
+            print(f"❌ Attempt {attempt + 1} failed: {e}")
+            if attempt < max_retries - 1:
+                wait_time = 2 ** attempt
+                print(f"Waiting {wait_time} seconds before retry...")
+                time.sleep(wait_time)
+            else:
+                print("❌ All retry attempts exhausted")
+
+    return None
+
+
+def try_load_mlflow_model(model_uri):
+
+    """Try loading an MLflow model as YOLO or PyFunc
+    Args:
+        model_uri (str): The MLflow model URI to load
+    Returns:
+        model (YOLO or pyfunc or None): The loaded YOLO model, PyFunc model, or None if loading failed
+    Example:
+        model = try_load_mlflow_model("models:/my_mlflow_model/Production")
+    Note: This function attempts to load the model first as a YOLO model, then as a PyFunc model.
+    """
+
     try:
         model = mlflow.pytorch.load_model(model_uri)
         print("✅ Loaded as PyTorch model")
@@ -288,12 +393,10 @@ def try_load_mlflow_model(model_uri):
     except Exception as e:
         print(f"PyTorch load failed: {e}")
 
-    # 2. PyFuncモデルとして試行
     try:
         model = mlflow.pyfunc.load_model(model_uri)
         print("✅ Loaded as PyFunc model")
 
-        # 3. YOLOとして抽出を試行
         yolo_model = extract_yolo_from_pyfunc(model_uri)
         if yolo_model:
             print("✅ YOLO model extracted")
@@ -348,3 +451,34 @@ def mlflow_run(func):
     print("✅ Function run within MLflow context")
     print()
     return func
+
+
+
+class YOLOModelWrapper(mlflow.pyfunc.PythonModel):
+
+    """Custom MLflow PyFunc model wrapper for YOLO"""
+
+    def load_context(self, context):
+
+        """Load the YOLO model from the provided context"""
+
+        model_file = context.artifacts["yolo_model"]
+        self.model = YOLO(model_file)
+        print("YOLO model loaded successfully")
+
+    def predict(self, context, model_input):
+
+        """Make predictions using the YOLO model"""
+        results = self.model(model_input)
+
+        output = []
+        for result in results:
+            if result.boxes is not None:
+                output.append({
+                    "boxes": result.boxes.xyxy.cpu().numpy().tolist(),
+                    "scores": result.boxes.conf.cpu().numpy().tolist(),
+                    "classes": result.boxes.cls.cpu().numpy().tolist()
+                })
+            else:
+                output.append({"boxes": [], "scores": [], "classes": []})
+        return output
