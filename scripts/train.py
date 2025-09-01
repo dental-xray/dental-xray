@@ -45,9 +45,10 @@ def main():
         batch=args.batch_size
     )
 
-    # model = load_model(model_storage="local", stage="None", bucket_name=BUCKET_NAME, path=LOCAL_REGISTRY_PATH, filename="trained_model_5epoch.pt", mlflow_model_name=MLFLOW_MODEL_NAME)
+    # model = load_model(model_storage="mlflow", stage="None", bucket_name=BUCKET_NAME, path=LOCAL_REGISTRY_PATH, filename="trained_model_5epoch.pt", mlflow_model_name=MLFLOW_MODEL_NAME)
+    # results = model.predict("/Users/syatsuzuka/.cache/kagglehub/datasets/lokisilvres/dental-disease-panoramic-detection-dataset/versions/6/YOLO/YOLO/test/images/ff050195-SABAQI_HASAN_2020-07-01203554_jpg.rf.c136b8d6f429857f7d335252645c646b.jpg")
+    # print(results[0].boxes)
     save_model(model, model_storage=MODEL_STORAGE, path=LOCAL_REGISTRY_PATH, filename=args.output, bucket_name=BUCKET_NAME, mlflow_model_name=MLFLOW_MODEL_NAME)
-
 
 if __name__ == '__main__':
     main()
