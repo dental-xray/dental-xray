@@ -9,6 +9,9 @@ from colorama import Fore, Style
 from google.cloud import storage
 import mlflow
 from mlflow.tracking import MlflowClient
+import torch
+import mlflow.artifacts
+import tempfile
 
 """Model-related functions for disease recognition using YOLOv8"""
 
@@ -101,14 +104,50 @@ def save_model(model, model_storage, path, filename=None, bucket_name=None, mlfl
         try:
             print("🚀 Starting upload the model onto MLflow...")
 
+            # Prevent deadlock by setting number of threads to 1
+            torch.set_num_threads(1)
+            os.environ['OMP_NUM_THREADS'] = '1'
+
             mlflow.set_tracking_uri(mlflow_tracking_uri)
 
-            mlflow.pytorch.log_model(
-                pytorch_model=model,
-                name="model",
-                registered_model_name=mlflow_model_name
-            )
-            print("✅ Model saved to MLflow")
+            if os.path.exists(model_path):
+                print(f"Using existing model file: {model_path}")
+
+                # Custom PyFunc wrapper to load YOLO model
+                class YOLOModelWrapper(mlflow.pyfunc.PythonModel):
+                    def load_context(self, context):
+                        from ultralytics import YOLO
+                        model_file = context.artifacts["yolo_model"]
+                        self.model = YOLO(model_file)
+                        print("YOLO model loaded successfully")
+
+                    def predict(self, context, model_input):
+                        results = self.model(model_input)
+
+                        output = []
+                        for result in results:
+                            if result.boxes is not None:
+                                output.append({
+                                    "boxes": result.boxes.xyxy.cpu().numpy().tolist(),
+                                    "scores": result.boxes.conf.cpu().numpy().tolist(),
+                                    "classes": result.boxes.cls.cpu().numpy().tolist()
+                                })
+                            else:
+                                output.append({"boxes": [], "scores": [], "classes": []})
+                        return output
+
+                # Save the YOLO model as a PyFunc model in MLflow
+                mlflow.pyfunc.log_model(
+                    artifact_path="model",
+                    python_model=YOLOModelWrapper(),
+                    artifacts={"yolo_model": model_path},
+                    registered_model_name=mlflow_model_name
+                )
+                print("✅ Model saved to MLflow as PyFunc model")
+
+            else:
+                print(f"❌ Model file not found: {model_path}")
+                return None
 
         except Exception as e:
             print(f"MLflow save failed: {e}")
@@ -120,6 +159,7 @@ def save_model(model, model_storage, path, filename=None, bucket_name=None, mlfl
     print()
 
     return None
+
 
 def load_model(model_storage, stage="Production",bucket_name=None, filename=None, path=None, mlflow_tracking_uri=None, mlflow_model_name=None):
 
@@ -179,30 +219,93 @@ def load_model(model_storage, stage="Production",bucket_name=None, filename=None
         print("✅ Model loaded from GCS")
 
     elif model_storage == "mlflow":
+
         print(Fore.BLUE + f"\nLoad [{stage}] model from MLflow..." + Style.RESET_ALL)
 
         mlflow.set_tracking_uri(mlflow_tracking_uri)
         client = MlflowClient()
 
         try:
-            model_versions = client.get_latest_versions(name=mlflow_model_name, stages=[stage])
-            model_uri = model_versions[0].source
+            if stage is None:
+                stage = "None"
 
-        except:
-            print(f"\n❌ No model found with name {mlflow_model_name} in stage {stage}")
+            model_versions = client.get_latest_versions(name=mlflow_model_name, stages=[stage])
+            if not model_versions:
+                print(f"\n❌ No model found")
+                return None
+
+            model_version = model_versions[0]
+            model_uri = f"models:/{mlflow_model_name}/{model_version.version}"
+            print(f"Model URI: {model_uri}")
+
+        except Exception as e:
+            print(f"\n❌ Error: {e}")
             return None
 
-        print(f"Model URI: {model_uri}")
-
+        # Ignore PyFunc and directly get the .pt file
         try:
-            model = mlflow.pytorch.load_model(model_uri)
-            print("✅ Model loaded from MLflow")
+            print("🔄 Downloading artifacts...")
+
+            with tempfile.TemporaryDirectory() as temp_dir:
+                artifact_path = mlflow.artifacts.download_artifacts(model_uri, dst_path=temp_dir)
+
+                # Search for the .pt file (it should be in artifacts/trained_model_5epoch.pt)
+                pt_file = os.path.join(artifact_path, "artifacts", "trained_model_5epoch.pt")
+
+                if os.path.exists(pt_file):
+                    print(f"✅ Found .pt file: {pt_file}")
+                    model = YOLO(pt_file)
+                    print("✅ YOLO model loaded successfully")
+
+                    # Save the model locally with a timestamped filename
+                    local_path = f"./mlflow_model_{datetime.now().strftime('%Y%m%d_%H%M%S')}.pt"
+                    model.save(local_path)
+                    print(f"Model saved locally: {local_path}")
+
+                else:
+                    print("❌ .pt file not found at expected location")
+                    return None
 
         except Exception as e:
             print(f"❌ Model load failed: {e}")
+            return None
 
+    else:
+        print("❌ Model storage not recognized")
+        return None
+
+    print()
     return model
 
+def try_load_mlflow_model(model_uri):
+    """MLflowモデルの段階的読み込み"""
+
+    # 1. PyTorchモデルとして試行
+    try:
+        model = mlflow.pytorch.load_model(model_uri)
+        print("✅ Loaded as PyTorch model")
+        return model
+    except Exception as e:
+        print(f"PyTorch load failed: {e}")
+
+    # 2. PyFuncモデルとして試行
+    try:
+        model = mlflow.pyfunc.load_model(model_uri)
+        print("✅ Loaded as PyFunc model")
+
+        # 3. YOLOとして抽出を試行
+        yolo_model = extract_yolo_from_pyfunc(model_uri)
+        if yolo_model:
+            print("✅ YOLO model extracted")
+            return yolo_model
+        else:
+            print("⚠️  Using PyFunc model")
+            return model
+
+    except Exception as e:
+        print(f"PyFunc load failed: {e}")
+
+    return None
 
 def mlflow_transition_model(current_stage: str, new_stage: str):
     """Transition a model to a new stage in MLflow
