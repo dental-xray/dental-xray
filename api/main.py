@@ -1,10 +1,32 @@
 import os
+import sys
 
-from api import predict, PredictionResult
-from src.disease_recognition.registry import load_model
+from api import predict
+from api.predict import PredictionResult
+from src.disease_recognition.params import BUCKET_NAME, MLFLOW_MODEL_NAME, MLFLOW_TRACKING_URI
+from api.load import load_model
 
 # Load the data and model at startup
-model = load_model()
+
+google_credentials_path = os.getenv("GOOGLE_APPLICATION_CREDENTIALS")
+if google_credentials_path is None:
+    print("❌ GOOGLE_APPLICATION_CREDENTIALS environment variable not set")
+elif not os.path.exists(google_credentials_path):
+    print(f"❌ Google credentials file not found at {google_credentials_path}")
+
+MODEL_PATH = "/app/models"
+if not os.path.exists(MODEL_PATH):
+    os.makedirs(MODEL_PATH)
+
+model = load_model(
+    model_storage="gcs",
+    stage="None",
+    bucket_name=BUCKET_NAME,
+    path=MODEL_PATH,
+    filename="best.pt",
+    mlflow_tracking_uri=MLFLOW_TRACKING_URI,
+    mlflow_model_name=MLFLOW_MODEL_NAME
+)
 
 def run_prediction(image_path: str) -> PredictionResult:
     """
