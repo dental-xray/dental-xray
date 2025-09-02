@@ -11,11 +11,8 @@ import mlflow
 from mlflow.tracking import MlflowClient
 import torch
 import mlflow.artifacts
-import tempfile
 import time
-import tempfile
 import shutil
-import requests
 
 
 """Model-related functions for disease recognition using YOLOv8"""
@@ -64,8 +61,8 @@ def save_results(model_storage, params: dict, metrics: dict, path=None, filename
 
         if params is not None:
             mlflow.log_params(params)
-        #if metrics is not None:
-        #    mlflow.log_metrics(metrics)
+        if metrics is not None:
+            mlflow.log_metrics(metrics)
         print("✅ Results saved on mlflow")
 
 
@@ -353,160 +350,6 @@ def robust_model_download(model_uri, path, filename, max_retries=3):
     return None
 
 
-# def download_model_with_retry(model_uri, path, filename, max_retries=3):
-
-#     """Download a model from MLflow with retry logic
-#     Args:
-#         model_uri (str): The MLflow model URI to download
-#         path (str): The local path to save the downloaded model
-#         filename (str): The filename to save the model as
-#         max_retries (int, optional): Maximum number of retry attempts. Default is 3
-#     Returns:
-#         model (YOLO or None): The loaded YOLO model or None if download failed
-#     Example:
-#         model = download_model_with_retry("models:/my_mlflow_model/Production", "./models", "my_model.pt")
-#     Note: This function attempts to download the model multiple times in case of failures.
-#     """
-
-#     for attempt in range(max_retries):
-#         try:
-#             print(f"🔄 Download attempt {attempt + 1}/{max_retries}...")
-
-#             with tempfile.TemporaryDirectory() as temp_dir:
-
-#                 session = requests.Session()
-#                 session.timeout = (30, 300)
-
-#                 artifact_path = mlflow.artifacts.download_artifacts(
-#                     model_uri,
-#                     dst_path=temp_dir
-#                 )
-
-#                 pt_file_candidates = [
-#                     os.path.join(artifact_path, "artifacts", "trained_model_5epoch.pt"),
-#                     os.path.join(artifact_path, "model", "trained_model_5epoch.pt"),
-#                     os.path.join(artifact_path, "trained_model_5epoch.pt")
-#                 ]
-
-#                 pt_file = None
-#                 for candidate in pt_file_candidates:
-#                     if os.path.exists(candidate):
-#                         pt_file = candidate
-#                         break
-
-#                 if pt_file is None:
-#                     print("🔍 Searching all directories for .pt files...")
-#                     for root, dirs, files in os.walk(artifact_path):
-#                         for file in files:
-#                             if file.endswith('.pt'):
-#                                 pt_file = os.path.join(root, file)
-#                                 print(f"Found: {pt_file}")
-#                                 break
-#                         if pt_file:
-#                             break
-
-#                 if pt_file and os.path.exists(pt_file):
-#                     print(f"✅ Found .pt file: {pt_file}")
-
-#                     file_size = os.path.getsize(pt_file)
-#                     print(f"File size: {file_size / (1024*1024):.1f} MB")
-
-#                     if file_size < 1024:
-#                         print("⚠️  File seems corrupted (too small)")
-#                         if attempt < max_retries - 1:
-#                             time.sleep(2 ** attempt)
-#                             continue
-
-#                     model = YOLO(pt_file)
-#                     print("✅ YOLO model loaded successfully")
-
-#                     if path and filename:
-#                         local_path = os.path.join(path, filename)
-#                         os.makedirs(path, exist_ok=True)
-
-#                         shutil.copy2(pt_file, local_path)
-#                         print(f"Model saved locally: {local_path}")
-
-#                         final_model = YOLO(local_path)
-#                         return final_model
-#                     else:
-#                         return model
-#                 else:
-#                     print(f"❌ .pt file not found (attempt {attempt + 1})")
-#                     if attempt < max_retries - 1:
-#                         time.sleep(2 ** attempt)
-#                         continue
-
-#         except Exception as e:
-#             print(f"❌ Attempt {attempt + 1} failed: {e}")
-#             if attempt < max_retries - 1:
-#                 wait_time = 2 ** attempt
-#                 print(f"Waiting {wait_time} seconds before retry...")
-#                 time.sleep(wait_time)
-#             else:
-#                 print("❌ All retry attempts exhausted")
-
-#     return None
-
-
-def try_load_mlflow_model(model_uri):
-
-    """Try loading an MLflow model as YOLO or PyFunc
-    Args:
-        model_uri (str): The MLflow model URI to load
-    Returns:
-        model (YOLO or pyfunc or None): The loaded YOLO model, PyFunc model, or None if loading failed
-    Example:
-        model = try_load_mlflow_model("models:/my_mlflow_model/Production")
-    Note: This function attempts to load the model first as a YOLO model, then as a PyFunc model.
-    """
-
-    try:
-        model = mlflow.pytorch.load_model(model_uri)
-        print("✅ Loaded as PyTorch model")
-        return model
-    except Exception as e:
-        print(f"PyTorch load failed: {e}")
-
-    try:
-        model = mlflow.pyfunc.load_model(model_uri)
-        print("✅ Loaded as PyFunc model")
-
-        yolo_model = extract_yolo_from_pyfunc(model_uri)
-        if yolo_model:
-            print("✅ YOLO model extracted")
-            return yolo_model
-        else:
-            print("⚠️  Using PyFunc model")
-            return model
-
-    except Exception as e:
-        print(f"PyFunc load failed: {e}")
-
-    return None
-
-def mlflow_transition_model(current_stage: str, new_stage: str):
-    """Transition a model to a new stage in MLflow
-    Args:
-        current_stage (str): The current stage of the model ("Staging" or "Production")
-        new_stage (str): The new stage to transition the model to ("Staging" or "Production")
-    Returns:
-        None
-    Example:
-        mlflow_transition_model("Staging", "Production")
-    Note: Ensure that the stages are either "Staging" or "Production".
-    """
-
-    print("=== Transitioning model stage in MLflow ===")
-    print(f"current stage: {current_stage}")
-    print(f"new stage: {new_stage}")
-
-    pass
-
-    print("✅ Model stage transitioned in MLflow")
-    print()
-    return None
-
 def mlflow_run(func):
 
     """Decorator to run a function within an MLflow run context
@@ -526,7 +369,6 @@ def mlflow_run(func):
     print("✅ Function run within MLflow context")
     print()
     return func
-
 
 
 class YOLOModelWrapper(mlflow.pyfunc.PythonModel):
