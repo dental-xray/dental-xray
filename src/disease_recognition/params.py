@@ -30,8 +30,8 @@ AUGMENTATION = os.environ.get("AUGMENTATION", "True").lower()
 GCP_PROJECT = os.environ.get("GCP_PROJECT")
 GCP_REGION = os.environ.get("GCP_REGION")
 BUCKET_NAME = os.environ.get("BUCKET_NAME")
-# GAR_IMAGE = os.environ.get("GAR_IMAGE")
-# GAR_MEMORY = os.environ.get("GAR_MEMORY")
+GAR_IMAGE = os.environ.get("GAR_IMAGE")
+GAR_MEMORY = os.environ.get("GAR_MEMORY")
 
 #======= Variables for MLflow =======#
 MLFLOW_TRACKING_URI = os.environ.get("MLFLOW_TRACKING_URI")

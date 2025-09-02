@@ -61,8 +61,8 @@ def save_results(model_storage, params: dict, metrics: dict, path=None, filename
 
         if params is not None:
             mlflow.log_params(params)
-        if metrics is not None:
-            mlflow.log_metrics(metrics)
+        #if metrics is not None:
+        #    mlflow.log_metrics(metrics)
         print("✅ Results saved on mlflow")
 
 
