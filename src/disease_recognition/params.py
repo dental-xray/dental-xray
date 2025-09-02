@@ -35,6 +35,6 @@ BUCKET_NAME = os.environ.get("BUCKET_NAME")
 
 #======= Variables for MLflow =======#
 MLFLOW_TRACKING_URI = os.environ.get("MLFLOW_TRACKING_URI")
-MLFLOW_EXPERIMENT = os.environ.get("MLFLOW_EXPERIMENT")
+MLFLOW_EXPERIMENT_NAME = os.environ.get("MLFLOW_EXPERIMENT_NAME")
 MLFLOW_MODEL_NAME = os.environ.get("MLFLOW_MODEL_NAME")
 MLFLOW_RUN_NAME = os.environ.get("MLFLOW_RUN_NAME")
