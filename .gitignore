@@ -1,5 +1,12 @@
 raw_data/
-*.jpeg
-*.jpg
-*.json
+.env
+.tmp
+*.pt
+*.pts
+
+.DS_Store
+__MACOSX
+
+.pytest_cache
+__pycache__
 .python-version

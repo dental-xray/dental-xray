@@ -1,0 +1,12 @@
+=== YOLO Validation Script ===
+Model: /home/shunjiro/.cache/kagglehub/datasets/lokisilvres/dental-disease-panoramic-detection-dataset/versions/6/best.pt
+Batch size: 12
+Image size: 420
+Device: cuda
+Path to dataset files: /home/shunjiro/.cache/kagglehub/datasets/lokisilvres/dental-disease-panoramic-detection-dataset/versions/6
+/home/shunjiro/.pyenv/versions/test2-env/lib/python3.12/site-packages/torch/cuda/__init__.py:619: UserWarning: Can't initialize NVML
+  warnings.warn("Can't initialize NVML")
+mAP@0.5: 0.27287493046926387
+mAP@0.5:0.95: 0.1413280827789592
+Precision: 0.4744010257016747
+Recall: 0.3825157405630011
