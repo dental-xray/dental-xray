@@ -15,7 +15,7 @@ import tempfile
 
 """Model-related functions for disease recognition using YOLOv8"""
 
-def save_results(model_storage, params: dict, metrics: dict):
+def save_results(model_storage, params: dict, metrics: dict, path=None, filename=None):
 
     """Save training/validation results to a CSV file
     Args:
@@ -30,14 +30,37 @@ def save_results(model_storage, params: dict, metrics: dict):
     """
 
     print("=== Saving results ===")
+    print(f"model_storage: {model_storage}")
     print(f"params: {params}")
     print(f"metrics: {metrics}")
+    print(f"path: {path}")
+    print(f"filename: {filename}")
+
+
+    # Save params locally
+    if params is not None:
+        params_path = os.path.join(path, filename + ".params.pickle")
+        with open(params_path, "wb") as file:
+            pickle.dump(params, file)
+
+    # Save metrics locally
+    if metrics is not None:
+        metrics_path = os.path.join(path, filename + "metrics.pickle")
+        with open(metrics_path, "wb") as file:
+            pickle.dump(metrics, file)
+
+    print("✅ Results saved locally")
+
+
+    if model_storage == "gcs":
+        pass
 
     if model_storage == "mlflow":
+
         if params is not None:
             mlflow.log_params(params)
-        if metrics is not None:
-            mlflow.log_metrics(metrics)
+        #if metrics is not None:
+        #    mlflow.log_metrics(metrics)
         print("✅ Results saved on mlflow")
 
 
