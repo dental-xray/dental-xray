@@ -13,11 +13,12 @@ import torch
 import mlflow.artifacts
 import time
 import shutil
+import pickle
 
 
 """Model-related functions for disease recognition using YOLOv8"""
 
-def save_results(model_storage, params: dict, metrics: dict, path=None, filename=None):
+def save_results(model_storage, params=None, metrics=None, path=None, filename=None):
 
     """Save training/validation results to a CSV file
     Args:
@@ -61,6 +62,7 @@ def save_results(model_storage, params: dict, metrics: dict, path=None, filename
 
         if params is not None:
             mlflow.log_params(params)
+
         if metrics is not None:
             mlflow.log_metrics(metrics)
         print("✅ Results saved on mlflow")
