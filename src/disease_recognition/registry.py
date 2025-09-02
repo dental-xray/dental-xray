@@ -177,6 +177,7 @@ def load_model(model_storage, filename, path, stage="Production",bucket_name=Non
         print("✅ Model loaded from local file")
 
     elif model_storage == "gcs":
+        print(Fore.BLUE + f"\nLoad latest model from GCS..." + Style.RESET_ALL)
 
         local_path = os.path.join(path, filename)
 
@@ -184,9 +185,6 @@ def load_model(model_storage, filename, path, stage="Production",bucket_name=Non
             print(f"Using existing local file: {local_path}")
 
         else:
-
-            print(Fore.BLUE + f"\nLoad latest model from GCS..." + Style.RESET_ALL)
-
             client = storage.Client()
             bucket = client.get_bucket(bucket_name)
             blobs = list(bucket.list_blobs(prefix="models/"))
@@ -208,6 +206,7 @@ def load_model(model_storage, filename, path, stage="Production",bucket_name=Non
         print("✅ Model loaded from GCS")
 
     elif model_storage == "mlflow":
+        print(Fore.BLUE + f"\nLoad latest model from MLflow..." + Style.RESET_ALL)
 
         local_path = os.path.join(path, filename)
 
@@ -219,9 +218,6 @@ def load_model(model_storage, filename, path, stage="Production",bucket_name=Non
             return model
 
         else:
-
-            print(Fore.BLUE + f"\nLoad [{stage}] model from MLflow..." + Style.RESET_ALL)
-
             mlflow.set_tracking_uri(mlflow_tracking_uri)
             client = MlflowClient()
 
@@ -242,34 +238,20 @@ def load_model(model_storage, filename, path, stage="Production",bucket_name=Non
                 print(f"\n❌ Error: {e}")
                 return None
 
-            # Ignore PyFunc and directly get the .pt file
             try:
-                print("🔄 Downloading artifacts...")
+                print("🔄 Starting robust download...")
+                model = robust_model_download(model_uri, path, filename, max_retries=10)
 
-                artifact_path = mlflow.artifacts.download_artifacts(model_uri, dst_path=path)
-                print(f"artifact_path: {artifact_path}")
-
-                pt_file = os.path.join(artifact_path, "artifacts", filename)
-
-                if os.path.exists(pt_file):
-                    print(f"✅ Found .pt file: {pt_file}")
-                    model = YOLO(pt_file)
-                    print("✅ YOLO model loaded successfully")
-
-                    # Save the model locally with a timestamped filename
-                    local_path = f"./mlflow_model_{datetime.now().strftime('%Y%m%d_%H%M%S')}.pt"
-                    model.save(local_path)
-                    print(f"Model saved locally: {local_path}")
-
-                    print("✅ YOLO model loaded successfully")
-
+                if model:
+                    print("✅ Model download successful")
                     return model
-
+                else:
+                    print("❌ Model download failed")
+                    return None
 
             except Exception as e:
-                print(f"❌ Model load failed: {e}")
+                print(f"❌ Robust download failed: {e}")
                 return None
-
 
     else:
         print("❌ Model storage not recognized")
@@ -278,9 +260,8 @@ def load_model(model_storage, filename, path, stage="Production",bucket_name=Non
     print()
     return model
 
-def download_model_with_retry(model_uri, path, filename, max_retries=3):
-
-    """Download a model from MLflow with retry logic
+def robust_model_download(model_uri, path, filename, max_retries=3):
+    """Robustly download a model from MLflow with retry logic
     Args:
         model_uri (str): The MLflow model URI to download
         path (str): The local path to save the downloaded model
@@ -289,89 +270,160 @@ def download_model_with_retry(model_uri, path, filename, max_retries=3):
     Returns:
         model (YOLO or None): The loaded YOLO model or None if download failed
     Example:
-        model = download_model_with_retry("models:/my_mlflow_model/Production", "./models", "my_model.pt")
-    Note: This function attempts to download the model multiple times in case of failures.
+        model = robust_model_download("models:/my_mlflow_model/Production", "./models", "my_model.pt")
     """
 
     for attempt in range(max_retries):
         try:
-            print(f"🔄 Download attempt {attempt + 1}/{max_retries}...")
+            print(f"🔄 Download attempt {attempt + 1}/{max_retries}")
 
-            with tempfile.TemporaryDirectory() as temp_dir:
+            try:
+                mlmodel_path = mlflow.artifacts.download_artifacts(
+                    f"{model_uri}/MLmodel",
+                    dst_path=path
+                )
+                print("✅ Metadata downloaded")
+            except:
+                print("⚠️  Metadata download failed")
 
-                session = requests.Session()
-                session.timeout = (30, 300)
-
-                artifact_path = mlflow.artifacts.download_artifacts(
-                    model_uri,
-                    dst_path=temp_dir
+            try:
+                artifacts_path = mlflow.artifacts.download_artifacts(
+                    f"{model_uri}/artifacts",
+                    dst_path=path
                 )
 
-                pt_file_candidates = [
-                    os.path.join(artifact_path, "artifacts", "trained_model_5epoch.pt"),
-                    os.path.join(artifact_path, "model", "trained_model_5epoch.pt"),
-                    os.path.join(artifact_path, "trained_model_5epoch.pt")
-                ]
+                if os.path.exists(artifacts_path):
+                    print(f"✅ Artifacts directory downloaded: {artifacts_path}")
 
-                pt_file = None
-                for candidate in pt_file_candidates:
-                    if os.path.exists(candidate):
-                        pt_file = candidate
-                        break
-
-                if pt_file is None:
-                    print("🔍 Searching all directories for .pt files...")
-                    for root, dirs, files in os.walk(artifact_path):
+                    """Search for .pt files in the artifacts directory"""
+                    for root, dirs, files in os.walk(artifacts_path):
                         for file in files:
                             if file.endswith('.pt'):
-                                pt_file = os.path.join(root, file)
-                                print(f"Found: {pt_file}")
-                                break
-                        if pt_file:
-                            break
+                                pt_path = os.path.join(root, file)
+                                print(f"Found .pt file: {pt_path}")
 
-                if pt_file and os.path.exists(pt_file):
-                    print(f"✅ Found .pt file: {pt_file}")
+                                model = YOLO(pt_path)
 
-                    file_size = os.path.getsize(pt_file)
-                    print(f"File size: {file_size / (1024*1024):.1f} MB")
+                                final_path = os.path.join(path, filename)
+                                os.makedirs(path, exist_ok=True)
+                                shutil.copy2(pt_path, final_path)
 
-                    if file_size < 1024:
-                        print("⚠️  File seems corrupted (too small)")
-                        if attempt < max_retries - 1:
-                            time.sleep(2 ** attempt)
-                            continue
+                                print(f"✅ Success! Model saved: {final_path}")
+                                return model
 
-                    model = YOLO(pt_file)
-                    print("✅ YOLO model loaded successfully")
+                    print("❌ No .pt file found in artifacts")
 
-                    if path and filename:
-                        local_path = os.path.join(path, filename)
-                        os.makedirs(path, exist_ok=True)
-
-                        shutil.copy2(pt_file, local_path)
-                        print(f"Model saved locally: {local_path}")
-
-                        final_model = YOLO(local_path)
-                        return final_model
-                    else:
-                        return model
-                else:
-                    print(f"❌ .pt file not found (attempt {attempt + 1})")
-                    if attempt < max_retries - 1:
-                        time.sleep(2 ** attempt)
-                        continue
+            except Exception as artifacts_error:
+                print(f"Artifacts download failed: {artifacts_error}")
+                if attempt < max_retries - 1:
+                    wait_time = 2 ** attempt
+                    print(f"Waiting {wait_time}s before retry...")
+                    time.sleep(wait_time)
+                    continue
 
         except Exception as e:
-            print(f"❌ Attempt {attempt + 1} failed: {e}")
+            print(f"Attempt {attempt + 1} failed: {e}")
             if attempt < max_retries - 1:
-                wait_time = 2 ** attempt
-                print(f"Waiting {wait_time} seconds before retry...")
-                time.sleep(wait_time)
-            else:
-                print("❌ All retry attempts exhausted")
+                time.sleep(2 ** attempt)
 
+    print("❌ All download attempts failed")
     return None
+
+
+# def download_model_with_retry(model_uri, path, filename, max_retries=3):
+
+#     """Download a model from MLflow with retry logic
+#     Args:
+#         model_uri (str): The MLflow model URI to download
+#         path (str): The local path to save the downloaded model
+#         filename (str): The filename to save the model as
+#         max_retries (int, optional): Maximum number of retry attempts. Default is 3
+#     Returns:
+#         model (YOLO or None): The loaded YOLO model or None if download failed
+#     Example:
+#         model = download_model_with_retry("models:/my_mlflow_model/Production", "./models", "my_model.pt")
+#     Note: This function attempts to download the model multiple times in case of failures.
+#     """
+
+#     for attempt in range(max_retries):
+#         try:
+#             print(f"🔄 Download attempt {attempt + 1}/{max_retries}...")
+
+#             with tempfile.TemporaryDirectory() as temp_dir:
+
+#                 session = requests.Session()
+#                 session.timeout = (30, 300)
+
+#                 artifact_path = mlflow.artifacts.download_artifacts(
+#                     model_uri,
+#                     dst_path=temp_dir
+#                 )
+
+#                 pt_file_candidates = [
+#                     os.path.join(artifact_path, "artifacts", "trained_model_5epoch.pt"),
+#                     os.path.join(artifact_path, "model", "trained_model_5epoch.pt"),
+#                     os.path.join(artifact_path, "trained_model_5epoch.pt")
+#                 ]
+
+#                 pt_file = None
+#                 for candidate in pt_file_candidates:
+#                     if os.path.exists(candidate):
+#                         pt_file = candidate
+#                         break
+
+#                 if pt_file is None:
+#                     print("🔍 Searching all directories for .pt files...")
+#                     for root, dirs, files in os.walk(artifact_path):
+#                         for file in files:
+#                             if file.endswith('.pt'):
+#                                 pt_file = os.path.join(root, file)
+#                                 print(f"Found: {pt_file}")
+#                                 break
+#                         if pt_file:
+#                             break
+
+#                 if pt_file and os.path.exists(pt_file):
+#                     print(f"✅ Found .pt file: {pt_file}")
+
+#                     file_size = os.path.getsize(pt_file)
+#                     print(f"File size: {file_size / (1024*1024):.1f} MB")
+
+#                     if file_size < 1024:
+#                         print("⚠️  File seems corrupted (too small)")
+#                         if attempt < max_retries - 1:
+#                             time.sleep(2 ** attempt)
+#                             continue
+
+#                     model = YOLO(pt_file)
+#                     print("✅ YOLO model loaded successfully")
+
+#                     if path and filename:
+#                         local_path = os.path.join(path, filename)
+#                         os.makedirs(path, exist_ok=True)
+
+#                         shutil.copy2(pt_file, local_path)
+#                         print(f"Model saved locally: {local_path}")
+
+#                         final_model = YOLO(local_path)
+#                         return final_model
+#                     else:
+#                         return model
+#                 else:
+#                     print(f"❌ .pt file not found (attempt {attempt + 1})")
+#                     if attempt < max_retries - 1:
+#                         time.sleep(2 ** attempt)
+#                         continue
+
+#         except Exception as e:
+#             print(f"❌ Attempt {attempt + 1} failed: {e}")
+#             if attempt < max_retries - 1:
+#                 wait_time = 2 ** attempt
+#                 print(f"Waiting {wait_time} seconds before retry...")
+#                 time.sleep(wait_time)
+#             else:
+#                 print("❌ All retry attempts exhausted")
+
+#     return None
 
 
 def try_load_mlflow_model(model_uri):
