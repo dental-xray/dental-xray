@@ -24,6 +24,7 @@ executing==2.2.0
 fastjsonschema==2.21.2
 fonttools==4.59.1
 fqdn==1.5.1
+folium
 h11==0.16.0
 httpcore==1.0.9
 httpx==0.28.1
@@ -102,6 +103,9 @@ six==1.17.0
 sniffio==1.3.1
 soupsieve==2.7
 stack-data==0.6.3
+streamlit==1.49.0
+streamlit-image-comparison
+streamlit-folium
 terminado==0.18.1
 threadpoolctl==3.6.0
 tinycss2==1.4.0
@@ -120,9 +124,3 @@ wcwidth==0.2.13
 webcolors==24.11.1
 webencodings==0.5.1
 websocket-client==1.8.0
-
-
-streamlit==1.49.0
-streamlit-image-comparison
-folium
-streamlit-folium
