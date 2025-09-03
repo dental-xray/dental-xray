@@ -27,7 +27,7 @@ st.markdown("### This app uses advanced machine learning to detect *dental disea
 st.divider()
 
 
-img_path = "images/Screenshot 2025-09-01 170022.png"
+img_path = "frontend/images/Screenshot 2025-09-01 170022.png"
 image = Image.open(img_path)  # <-- Add this line
 new_size = (920, 720)
 resized_image = image.resize(new_size)

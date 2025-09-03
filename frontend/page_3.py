@@ -37,7 +37,7 @@ st.divider()
 col1, col2 = st.columns([1, 1])
 with col1:
     url_root_filling = "https://www.nidcr.nih.gov/health-info/dental-fillings"
-    img_path = "images/Screenshot 2025-09-02 105304.png"
+    img_path = "frontend/images/Screenshot 2025-09-02 105304.png"
     image = Image.open(img_path)  # <-- Add this line
     new_size = (520, 320)
     resized_image_filling = image.resize(new_size)
@@ -57,7 +57,7 @@ st.divider()
 col1, col2 = st.columns([1, 1])
 with col1:
     url_root_piece = "https://medlineplus.gov/ency/article/001055.htm"
-    img_path = "images/Screenshot 2025-09-02 105345.png"
+    img_path = "frontend/images/Screenshot 2025-09-02 105345.png"
     image = Image.open(img_path)  # <-- Add this line
     new_size = (520, 320)
     resized_image_rootpiece = image.resize(new_size)
@@ -77,7 +77,7 @@ st.divider()
 col1, col2 = st.columns([1, 1])
 with col1:
     url_caries = "https://medlineplus.gov/toothdecay.html"
-    img_path = "images/Screenshot 2025-09-02 105405.png"
+    img_path = "frontend/images/Screenshot 2025-09-02 105405.png"
     image = Image.open(img_path)  # <-- Add this line
     new_size = (520, 320)
     resized_image_caries = image.resize(new_size)
@@ -97,7 +97,7 @@ st.divider()
 col1, col2 = st.columns([1, 1])
 with col1:
     url_crown = "https://medlineplus.gov/ency/article/007631.htm"
-    img_path = "images/Screenshot 2025-09-02 105713.png"
+    img_path = "frontend/images/Screenshot 2025-09-02 105713.png"
     image = Image.open(img_path)  # <-- Add this line
     new_size = (520, 320)
     resized_image_crown = image.resize(new_size)
@@ -117,7 +117,7 @@ st.divider()
 col1, col2 = st.columns([1, 1])
 with col1:
     url_rootcanal ="https://medlineplus.gov/ency/article/007275.htm"
-    img_path = "images/Screenshot 2025-09-02 110229.png"
+    img_path = "frontend/images/Screenshot 2025-09-02 110229.png"
     image = Image.open(img_path)  # <-- Add this line
     new_size = (520, 320)
     resized_image_rootcanal = image.resize(new_size)
@@ -137,7 +137,7 @@ st.divider()
 col1, col2 = st.columns([1, 1])
 with col1:
     url_impacted = "https://medlineplus.gov/ency/article/001057.htm"
-    img_path = "images/Screenshot 2025-09-02 112406.png"
+    img_path = "frontend/images/Screenshot 2025-09-02 112406.png"
     image = Image.open(img_path)  # <-- Add this line
     new_size = (520, 320)
     resized_image_impacted_tooth = image.resize(new_size)
