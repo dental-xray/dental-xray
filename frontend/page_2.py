@@ -1,6 +1,6 @@
 import streamlit as st
 from streamlit_image_comparison import image_comparison
-from frontend.api_call import call_api, call_api_cached
+from api_call import call_api, call_api_cached
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 import folium
@@ -49,9 +49,9 @@ if uploaded_file is None:
     st.markdown("## Download Images Example")
 
 # Load your images
-image_paths = ["/home/maciej/code/Wikar235/x-ray-disease/frontend/images/1154870000-jpg_png_jpg.rf.b58bc86b0009ff155104cacef61b4e4f.jpg",
-               "/home/maciej/code/Wikar235/x-ray-disease/frontend/images/3623320000-jpg_png_jpg.rf.d4ca918d94910914cba47a574ddbba08.jpg",
-               "/home/maciej/code/Wikar235/x-ray-disease/frontend/images/e6067300-Shahmohamadi_Roghayeh_2022-05-14195349_jpg.rf.acd7cb2e09d40c824c524481cb123035.jpg"]
+image_paths = ["images/1154870000-jpg_png_jpg.rf.b58bc86b0009ff155104cacef61b4e4f.jpg",
+               "images/3623320000-jpg_png_jpg.rf.d4ca918d94910914cba47a574ddbba08.jpg",
+               "images/e6067300-Shahmohamadi_Roghayeh_2022-05-14195349_jpg.rf.acd7cb2e09d40c824c524481cb123035.jpg"]
 
 cols = st.columns(len(image_paths) + 4)
 
