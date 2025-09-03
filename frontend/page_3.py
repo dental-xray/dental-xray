@@ -8,7 +8,6 @@ from folium.plugins import TagFilterButton
 import tempfile
 import httpx
 import numpy as np
-from ultralytics.utils.ops import xyxy2xywh
 from PIL import Image
 
 st.set_page_config(

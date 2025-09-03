@@ -349,7 +349,6 @@ if uploaded_file is not None:
                         box = data["detections"]["box"][i]["boxes"][0]
                         boxes.append(box)
                     boxes = np.array(boxes)
-                    # boxes = xyxy2xywh(boxes)
 
                     def get_class_name(class_id):
                         class_dict = {0:"Caries", 1:"Crown", 2:"Filling", 3:"Implant", 4:"Malaligned",
