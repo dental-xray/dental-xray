@@ -49,7 +49,7 @@ if uploaded_file is None:
     st.markdown("## Download Images Example")
 
 # Load your images
-image_paths = ["images/OFFICIAL_IMAGE.jpg",
+image_paths = ["frontend/images/OFFICIAL_IMAGE.jpg",
                "frontend/images/3623320000-jpg_png_jpg.rf.d4ca918d94910914cba47a574ddbba08.jpg",
                "frontend/images/e6067300-Shahmohamadi_Roghayeh_2022-05-14195349_jpg.rf.acd7cb2e09d40c824c524481cb123035.jpg"]
 
