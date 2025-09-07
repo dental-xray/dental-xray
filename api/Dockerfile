@@ -22,6 +22,7 @@ RUN pip install --no-cache-dir \
 COPY src ./src
 COPY api ./api
 COPY .env .
+COPY models/default.pt ./models/default.pt
 
 # Expose the API port
 EXPOSE 8000

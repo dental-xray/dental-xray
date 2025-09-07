@@ -8,22 +8,22 @@ from api.load import load_model
 
 # Load the data and model at startup
 
-google_credentials_path = os.getenv("GOOGLE_APPLICATION_CREDENTIALS")
-if google_credentials_path is None:
-    print("❌ GOOGLE_APPLICATION_CREDENTIALS environment variable not set")
-elif not os.path.exists(google_credentials_path):
-    print(f"❌ Google credentials file not found at {google_credentials_path}")
+# google_credentials_path = os.getenv("GOOGLE_APPLICATION_CREDENTIALS")
+# if google_credentials_path is None:
+#     print("❌ GOOGLE_APPLICATION_CREDENTIALS environment variable not set")
+# elif not os.path.exists(google_credentials_path):
+#     print(f"❌ Google credentials file not found at {google_credentials_path}")
 
 MODEL_PATH = "/app/models"
 if not os.path.exists(MODEL_PATH):
     os.makedirs(MODEL_PATH)
 
 model = load_model(
-    model_storage="gcs",
+    model_storage="local",
     stage="None",
     bucket_name=BUCKET_NAME,
     path=MODEL_PATH,
-    filename="best.pt",
+    filename="default.pt",
     mlflow_tracking_uri=MLFLOW_TRACKING_URI,
     mlflow_model_name=MLFLOW_MODEL_NAME
 )
