@@ -1,7 +1,6 @@
 import hashlib
 import streamlit as st
 import httpx
-from disease_recognition.params import *
 
 
 @st.cache_data(show_spinner=False)
