@@ -1,8 +1,0 @@
-services:
-  app:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: disease-recognition-app
-    ports:
-      - "8080:8080"
