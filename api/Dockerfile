@@ -8,27 +8,22 @@ FROM ultralytics/ultralytics:latest-cpu
 # Set working directory
 WORKDIR /app
 
-# Install required Python packages
-# Includes fastapi, uvicorn, python-dotenv, and dill (needed by Ultralytics)
-RUN pip install --no-cache-dir \
-    fastapi \
-    "uvicorn[standard]" \
-    python-dotenv \
-    python-multipart \
-    google-cloud-storage \
-    dill
+# Install system dependencies
+RUN apt-get update && apt-get install -y make && rm -rf /var/lib/apt/lists/*
 
 # Copy your application code into container
 COPY src ./src
 COPY api ./api
 COPY .env .
 COPY models/default.pt ./models/default.pt
+COPY Makefile .
+COPY requirements-api.txt .
+COPY setup.py .
+
+RUN make install-api
 
 # Expose the API port
-EXPOSE 8000
+EXPOSE 8080
 
 # Run FastAPI using Uvicorn
-CMD ["uvicorn", "api.fast:app", "--host", "0.0.0.0", "--port", "8000"]
-
-# Run with GCP credentials
-# docker run -it -e GOOGLE_APPLICATION_CREDENTIALS=/secrets/google-account.json -v /Users/zhangqi/code/Qi-Yaniv/disease-recognition-470203-b31fb290a999.json:/secrets/google-account.json   dental-recognition-api:lightv3
+CMD ["uvicorn", "api.fast:app", "--host", "0.0.0.0", "--port", "8080"]

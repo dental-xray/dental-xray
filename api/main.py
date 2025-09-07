@@ -1,10 +1,12 @@
 import os
 import sys
 
-from api import predict
+# from api import predict
+from api.predict import predict
 from api.predict import PredictionResult
-from src.disease_recognition.params import BUCKET_NAME, MLFLOW_MODEL_NAME, MLFLOW_TRACKING_URI
 from api.load import load_model
+from disease_recognition.params import *
+
 
 # Load the data and model at startup
 
@@ -14,15 +16,11 @@ from api.load import load_model
 # elif not os.path.exists(google_credentials_path):
 #     print(f"❌ Google credentials file not found at {google_credentials_path}")
 
-MODEL_PATH = "/app/models"
-if not os.path.exists(MODEL_PATH):
-    os.makedirs(MODEL_PATH)
-
 model = load_model(
     model_storage="local",
     stage="None",
     bucket_name=BUCKET_NAME,
-    path=MODEL_PATH,
+    path=LOCAL_REGISTRY_PATH,
     filename="default.pt",
     mlflow_tracking_uri=MLFLOW_TRACKING_URI,
     mlflow_model_name=MLFLOW_MODEL_NAME
