@@ -54,8 +54,6 @@ with col2:
 
     st.markdown("## Check out these links for more information:")
     st.write("")
-    st.markdown("#### - [link](%s)" % url_mlflow + " for MLflow setup")
-    st.write("")
     st.markdown("#### - [link](%s)" % url_kaggle + " for Dataset used to train the model")
     st.write("")
     st.markdown("#### - [link](%s)" % url_gcs + " for GCS bucket")
