@@ -48,10 +48,19 @@ jobs:
       run: |
         cd docs
         make html
+        echo "Build completed, checking output:"
+        ls -la
+        echo "Checking _build directory:"
+        ls -la _build/ || echo "_build directory not found"
+        echo "Checking html directory:"
+        ls -la _build/html/ || echo "_build/html directory not found"
 
     - name: Add .nojekyll file
       run: |
+        # Ensure the directory exists before creating .nojekyll
+        mkdir -p docs/_build/html
         touch docs/_build/html/.nojekyll
+        echo ".nojekyll file created successfully"
 
     - name: Setup Pages
       if: github.ref == 'refs/heads/main'
