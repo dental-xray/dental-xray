@@ -58,9 +58,10 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#module-disease_recognition.params">disease_recognition.params module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-disease_recognition.registry">disease_recognition.registry module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#disease_recognition.registry.YOLOModelWrapper"><code class="docutils literal notranslate"><span class="pre">YOLOModelWrapper</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#disease_recognition.registry.load_model"><code class="docutils literal notranslate"><span class="pre">load_model()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#disease_recognition.registry.mlflow_run"><code class="docutils literal notranslate"><span class="pre">mlflow_run()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#disease_recognition.registry.mlflow_transition_model"><code class="docutils literal notranslate"><span class="pre">mlflow_transition_model()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#disease_recognition.registry.robust_model_download"><code class="docutils literal notranslate"><span class="pre">robust_model_download()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#disease_recognition.registry.save_model"><code class="docutils literal notranslate"><span class="pre">save_model()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#disease_recognition.registry.save_results"><code class="docutils literal notranslate"><span class="pre">save_results()</span></code></a></li>
 </ul>
@@ -220,9 +221,28 @@ results (pd.DataFrame): DataFrame containing training results and metrics</p>
 </section>
 <section id="module-disease_recognition.registry">
 <span id="disease-recognition-registry-module"></span><h2>disease_recognition.registry module<a class="headerlink" href="#module-disease_recognition.registry" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="disease_recognition.registry.YOLOModelWrapper">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">disease_recognition.registry.</span></span><span class="sig-name descname"><span class="pre">YOLOModelWrapper</span></span><a class="reference internal" href="_modules/disease_recognition/registry.html#YOLOModelWrapper"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#disease_recognition.registry.YOLOModelWrapper" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">PythonModel</span></code></p>
+<p>Custom MLflow PyFunc model wrapper for YOLO</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="disease_recognition.registry.YOLOModelWrapper.load_context">
+<span class="sig-name descname"><span class="pre">load_context</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">context</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/disease_recognition/registry.html#YOLOModelWrapper.load_context"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#disease_recognition.registry.YOLOModelWrapper.load_context" title="Link to this definition"></a></dt>
+<dd><p>Load the YOLO model from the provided context</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="disease_recognition.registry.YOLOModelWrapper.predict">
+<span class="sig-name descname"><span class="pre">predict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">context</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_input</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/disease_recognition/registry.html#YOLOModelWrapper.predict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#disease_recognition.registry.YOLOModelWrapper.predict" title="Link to this definition"></a></dt>
+<dd><p>Make predictions using the YOLO model</p>
+</dd></dl>
+
+</dd></dl>
+
 <dl class="py function">
 <dt class="sig sig-object py" id="disease_recognition.registry.load_model">
-<span class="sig-prename descclassname"><span class="pre">disease_recognition.registry.</span></span><span class="sig-name descname"><span class="pre">load_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_storage</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stage</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Production'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bucket_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mlflow_tracking_uri</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mlflow_model_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/disease_recognition/registry.html#load_model"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#disease_recognition.registry.load_model" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">disease_recognition.registry.</span></span><span class="sig-name descname"><span class="pre">load_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_storage</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filename</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stage</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Production'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bucket_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mlflow_tracking_uri</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mlflow_model_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/disease_recognition/registry.html#load_model"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#disease_recognition.registry.load_model" title="Link to this definition"></a></dt>
 <dd><p>Load a model from the specified model_storage
 :param model_storage: The storage option to load the model from (“local”, “gcs”, or “mlflow”)
 :type model_storage: str
@@ -272,26 +292,32 @@ model = load_model(“mlflow”, mlflow_tracking_uri=”<a class="reference exte
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="disease_recognition.registry.mlflow_transition_model">
-<span class="sig-prename descclassname"><span class="pre">disease_recognition.registry.</span></span><span class="sig-name descname"><span class="pre">mlflow_transition_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">current_stage</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">new_stage</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/disease_recognition/registry.html#mlflow_transition_model"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#disease_recognition.registry.mlflow_transition_model" title="Link to this definition"></a></dt>
-<dd><p>Transition a model to a new stage in MLflow
-:param current_stage: The current stage of the model (“Staging” or “Production”)
-:type current_stage: str
-:param new_stage: The new stage to transition the model to (“Staging” or “Production”)
-:type new_stage: str</p>
+<dt class="sig sig-object py" id="disease_recognition.registry.robust_model_download">
+<span class="sig-prename descclassname"><span class="pre">disease_recognition.registry.</span></span><span class="sig-name descname"><span class="pre">robust_model_download</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_uri</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filename</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_retries</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/disease_recognition/registry.html#robust_model_download"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#disease_recognition.registry.robust_model_download" title="Link to this definition"></a></dt>
+<dd><p>Robustly download a model from MLflow with retry logic
+:param model_uri: The MLflow model URI to download
+:type model_uri: str
+:param path: The local path to save the downloaded model
+:type path: str
+:param filename: The filename to save the model as
+:type filename: str
+:param max_retries: Maximum number of retry attempts. Default is 3
+:type max_retries: int, optional</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>None</p>
+<dd class="field-odd"><p>The loaded YOLO model or None if download failed</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>model (YOLO or None)</p>
 </dd>
 </dl>
 <p class="rubric">Example</p>
-<p>mlflow_transition_model(“Staging”, “Production”)</p>
-<p>Note: Ensure that the stages are either “Staging” or “Production”.</p>
+<p>model = robust_model_download(“models:/my_mlflow_model/Production”, “./models”, “my_model.pt”)</p>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="disease_recognition.registry.save_model">
-<span class="sig-prename descclassname"><span class="pre">disease_recognition.registry.</span></span><span class="sig-name descname"><span class="pre">save_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_storage</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bucket_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mlflow_model_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/disease_recognition/registry.html#save_model"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#disease_recognition.registry.save_model" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">disease_recognition.registry.</span></span><span class="sig-name descname"><span class="pre">save_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_storage</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bucket_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mlflow_tracking_uri</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mlflow_model_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/disease_recognition/registry.html#save_model"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#disease_recognition.registry.save_model" title="Link to this definition"></a></dt>
 <dd><p>Save the trained model to the specified model_storage
 :param model: The trained YOLO model to be saved
 :type model: YOLO
@@ -303,6 +329,8 @@ model = load_model(“mlflow”, mlflow_tracking_uri=”<a class="reference exte
 :type filename: str, optional
 :param bucket_name: The GCS bucket name if model_storage is “gcs”
 :type bucket_name: str, optional
+:param mlflow_tracking_uri: The MLflow tracking URI if model_storage is “mlflow”
+:type mlflow_tracking_uri: str, optional
 :param mlflow_model_name: The registered model name in MLflow if model_storage is “mlflow”
 :type mlflow_model_name: str, optional</p>
 <dl class="field-list simple">
@@ -319,7 +347,7 @@ save_model(model, “mlflow”, None, mlflow_model_name=”my_mlflow_model”)</
 
 <dl class="py function">
 <dt class="sig sig-object py" id="disease_recognition.registry.save_results">
-<span class="sig-prename descclassname"><span class="pre">disease_recognition.registry.</span></span><span class="sig-name descname"><span class="pre">save_results</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_storage</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metrics</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/disease_recognition/registry.html#save_results"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#disease_recognition.registry.save_results" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">disease_recognition.registry.</span></span><span class="sig-name descname"><span class="pre">save_results</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_storage</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metrics</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/disease_recognition/registry.html#save_results"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#disease_recognition.registry.save_results" title="Link to this definition"></a></dt>
 <dd><p>Save training/validation results to a CSV file
 :param model_storage: The storage option to save results (“local” or “mlflow”)
 :type model_storage: str
