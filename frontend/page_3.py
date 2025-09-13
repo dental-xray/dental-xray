@@ -46,10 +46,10 @@ with col1:
             )
 
 with col2:
-    st.write("## **Filling**")
-    st.markdown("##### - A dental procedure to restore a tooth damaged by decay")
-    st.markdown("##### - Prevents further progression of caries and restores tooth function")
-    st.markdown("##### - [link](%s)" % url_root_filling + " for more information")
+    st.write("#### **Filling**")
+    st.markdown("- A dental procedure to restore a tooth damaged by decay")
+    st.markdown("- Prevents further progression of caries and restores tooth function")
+    st.markdown("- [link](%s)" % url_root_filling + " for more information")
 st.divider()
 
 ## ROOT PIECE ##
@@ -66,10 +66,10 @@ with col1:
             )
 
 with col2:
-    st.write("## **Root Piece**")
-    st.markdown("##### - A fragment of a tooth root left in the bone after breakage or incomplete extraction")
-    st.markdown("##### - Can lead to infection and usually requires removal")
-    st.markdown("##### - [link](%s)" % url_root_piece + " for more information")
+    st.write("#### **Root Piece**")
+    st.markdown("- A fragment of a tooth root left in the bone after breakage or incomplete extraction")
+    st.markdown("- Can lead to infection and usually requires removal")
+    st.markdown("- [link](%s)" % url_root_piece + " for more information")
 st.divider()
 
 ## CARIES ##
@@ -86,10 +86,10 @@ with col1:
             )
 
 with col2:
-    st.write("## **Caries**")
-    st.markdown("#### - A bacterial disease that causes demineralization of enamel and dentin")
-    st.markdown("#### - If untreated, it can lead to pain, infection, and tooth loss")
-    st.markdown("#### - [link](%s)" % url_caries + " for more information")
+    st.write("#### **Caries**")
+    st.markdown("- A bacterial disease that causes demineralization of enamel and dentin")
+    st.markdown("- If untreated, it can lead to pain, infection, and tooth loss")
+    st.markdown("- [link](%s)" % url_caries + " for more information")
 st.divider()
 
 ## CROWN ##
@@ -106,10 +106,10 @@ with col1:
             )
 
 with col2:
-    st.write("## **Crown**")
-    st.markdown("#### - A fixed prosthetic cap placed over a natural tooth")
-    st.markdown("#### - Used for large cavities, after root canal treatment, or for aesthetic purposes")
-    st.markdown("#### - [link](%s)" % url_crown + " for more information")
+    st.write("#### **Crown**")
+    st.markdown("- A fixed prosthetic cap placed over a natural tooth")
+    st.markdown("- Used for large cavities, after root canal treatment, or for aesthetic purposes")
+    st.markdown("- [link](%s)" % url_crown + " for more information")
 st.divider()
 
 ## ROOT CANAL ##
@@ -126,10 +126,10 @@ with col1:
             )
 
 with col2:
-    st.write("## **Root Canal Treatment**")
-    st.markdown("#### - A procedure to remove infected or damaged pulp from root canals")
-    st.markdown("#### - Canals are cleaned, disinfected, and filled to prevent reinfection")
-    st.markdown("#### - [link](%s)" % url_rootcanal + " for more information")
+    st.write("#### **Root Canal Treatment**")
+    st.markdown("- A procedure to remove infected or damaged pulp from root canals")
+    st.markdown("- Canals are cleaned, disinfected, and filled to prevent reinfection")
+    st.markdown("- [link](%s)" % url_rootcanal + " for more information")
 st.divider()
 
 ## IMPACTED TOOTH ##
@@ -147,9 +147,9 @@ with col1:
 
 
 with col2:
-    st.write("## **Impacted Tooth**")
-    st.markdown("#### - A tooth that fails to fully erupt and remains partially or completely in the bone")
-    st.markdown("#### - Most often affects wisdom teeth and may cause pain, pressure, or inflammation")
-    st.markdown("#### - [link](%s)" % url_impacted + " for more information")
+    st.write("#### **Impacted Tooth**")
+    st.markdown("- A tooth that fails to fully erupt and remains partially or completely in the bone")
+    st.markdown("- Most often affects wisdom teeth and may cause pain, pressure, or inflammation")
+    st.markdown("- [link](%s)" % url_impacted + " for more information")
 
 st.divider()
