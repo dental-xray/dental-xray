@@ -1,12 +1,10 @@
 # .github/workflows/docs.yml
-# Simple workflow for Sphinx documentation deployment to GitHub Pages
-
 name: Documentation
 
 on:
   push:
     branches: [ master ]
-  workflow_dispatch:  # Allow manual triggering
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -44,14 +42,13 @@ jobs:
       run: |
         cd docs
         make html
-        echo "Build completed, checking output:"
-        ls -la _build/html/ || echo "_build/html directory not found"
+        echo "Build completed successfully!"
 
     - name: Add .nojekyll file
       run: |
         mkdir -p docs/_build/html
         touch docs/_build/html/.nojekyll
-        echo ".nojekyll file created successfully"
+        echo ".nojekyll file created"
 
     - name: Setup Pages
       uses: actions/configure-pages@v4
@@ -64,3 +61,13 @@ jobs:
     - name: Deploy to GitHub Pages
       id: deployment
       uses: actions/deploy-pages@v4
+
+    - name: 📍 Display deployment information
+      run: |
+        echo "🎉 Documentation deployed successfully!"
+        echo ""
+        echo "📍 Your documentation is available at:"
+        echo "🔗 https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/"
+        echo ""
+        echo "ℹ️  It may take a few minutes for changes to be visible."
+        echo "ℹ️  If you don't see updates, try clearing your browser cache."
