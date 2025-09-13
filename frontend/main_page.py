@@ -31,8 +31,10 @@ new_size = (920, 720)
 resized_image = image.resize(new_size)
 st.write("")
 
+url_slide = "https://drive.google.com/file/d/1Q-RsS6pEQYNW9U9Xw3_8tAGrauSOqrzF/view?usp=drive_link"
 url_kaggle = "https://www.kaggle.com/datasets/lokisilvres/dental-disease-panoramic-detection-dataset"
 url_gcs = "https://storage.googleapis.com/disease-recognition/"
+url_github = "https://github.com/dental-xray/dental-xray"
 url_docs = "https://dental-xray.github.io/dental-xray/"
 url_backend = "https://dental-xray-858779445866.europe-west1.run.app/"
 url_backend_docs = url_backend + "docs"
@@ -51,11 +53,15 @@ with col2:
     st.image(resized_image, caption='Confusion matrix of our model')
     st.divider()
 
-    st.markdown("#### Resources:")
+    st.markdown("#### More Info:")
     st.write("")
-    st.markdown("**Source Code**: [Github Pages](%s)" % url_docs)
+    st.markdown("**Slide**: [download](%s)" % url_slide)
+    st.write("")
+    st.markdown("**Source Code**: [Github Pages](%s)" % url_github)
     st.write("")
     st.markdown("**Shared Library Docs**: [Github Pages](%s)" % url_docs)
+    st.write("")
+    st.markdown("#### Resources:")
     st.write("")
     st.markdown("**Dataset**: [Dental Xray Panoramic Dataset on Kaggle](%s)" % url_kaggle)
     st.write("")
