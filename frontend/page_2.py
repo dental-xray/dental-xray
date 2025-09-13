@@ -13,13 +13,12 @@ from collections import defaultdict
 import pandas as pd
 
 
-st.markdown("# Prediction Page 🦷")
+st.markdown("# Prediction Page")
 # SPACER
 st.text("")
 st.text("")
 st.text("")
 
-st.sidebar.markdown("# 🦷Prediction Page")
 # SPACER
 st.text("")
 st.text("")
