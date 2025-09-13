@@ -6,8 +6,6 @@ name: Documentation
 on:
   push:
     branches: [ master ]
-  pull_request:
-    branches: [ master ]
   workflow_dispatch:  # Allow manual triggering
 
 permissions:
@@ -39,9 +37,7 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        # Install only documentation dependencies
         pip install sphinx sphinx-rtd-theme
-        # Install package in development mode (if needed for autodoc)
         pip install -e . || echo "Package install failed, continuing without it"
 
     - name: Build documentation
@@ -49,30 +45,22 @@ jobs:
         cd docs
         make html
         echo "Build completed, checking output:"
-        ls -la
-        echo "Checking _build directory:"
-        ls -la _build/ || echo "_build directory not found"
-        echo "Checking html directory:"
         ls -la _build/html/ || echo "_build/html directory not found"
 
     - name: Add .nojekyll file
       run: |
-        # Ensure the directory exists before creating .nojekyll
         mkdir -p docs/_build/html
         touch docs/_build/html/.nojekyll
         echo ".nojekyll file created successfully"
 
     - name: Setup Pages
-      if: github.ref == 'refs/heads/main'
       uses: actions/configure-pages@v4
 
     - name: Upload artifact
-      if: github.ref == 'refs/heads/main'
       uses: actions/upload-pages-artifact@v3
       with:
         path: docs/_build/html
 
     - name: Deploy to GitHub Pages
-      if: github.ref == 'refs/heads/main'
       id: deployment
       uses: actions/deploy-pages@v4
