@@ -42,13 +42,15 @@ jobs:
       run: |
         cd docs
         make html
-        echo "Build completed successfully!"
+        echo "Build completed, checking output:"
+        ls -la build/html/
+        echo "Index file exists:"
+        ls -la build/html/index.html
 
     - name: Add .nojekyll file
       run: |
-        mkdir -p docs/_build/html
-        touch docs/_build/html/.nojekyll
-        echo ".nojekyll file created"
+        touch docs/build/html/.nojekyll
+        echo ".nojekyll file created successfully"
 
     - name: Setup Pages
       uses: actions/configure-pages@v4
@@ -56,7 +58,7 @@ jobs:
     - name: Upload artifact
       uses: actions/upload-pages-artifact@v3
       with:
-        path: docs/_build/html
+        path: docs/build/html
 
     - name: Deploy to GitHub Pages
       id: deployment
@@ -70,4 +72,3 @@ jobs:
         echo "🔗 https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/"
         echo ""
         echo "ℹ️  It may take a few minutes for changes to be visible."
-        echo "ℹ️  If you don't see updates, try clearing your browser cache."
